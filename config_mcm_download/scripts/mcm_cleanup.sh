@@ -16,8 +16,7 @@ icp_version=$5
 mycluster=$6
 
 # CLIs should be installed
-if ["${icp_version}" = '2.1.0.3']
-then
+if [[ "${icp_version}" == "2.1.0.3" ]]; then
     bx pr login -a https://localhost:8443 --skip-ssl-validation -u ${admin_user} -p ${admin_password} -c id-${mycluster}-account
     bx pr delete-helm-chart --name ibm-mcm-prod
     bx pr delete-helm-chart --name ibm-mcmk-prod
