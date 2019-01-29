@@ -160,5 +160,9 @@ echo docker load -i $i
 docker load -i $i | tee -a /tmp/mcm_image_loadd.txt
 done
 
-cloudctl catalog load-chart --archive charts/*
-
+for chart in `ls charts/*`;
+do
+echo $chart;
+echo cloudctl catalog load-chart --archive $chart 
+cloudctl catalog load-chart --archive $chart
+done
