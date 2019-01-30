@@ -141,28 +141,34 @@ function check_command_and_install() {
 #  fi
 #fi
 
+# docker login
 echo "docker login -u ${PARAM_AUTH_USER} -p ** ${PARAM_MASTER_NODE_HOST}:8500"
 sudo docker login -u ${PARAM_AUTH_USER} -p ${PARAM_AUTH_PASSWORD} ${PARAM_MASTER_NODE_HOST}:8500
-echo "cloudctl login -u ${PARAM_AUTH_USER} -p ** -c id-${PARAM_CLUSTER_NAME}-account -n kube-system --skip-ssl-validation"
 
-#echo "cloudctl catalog load-ppa-archive -a $MCM_PATH/${PARAM_PPA_ARCHIVE_NAME} --registry ${PARAM_MASTER_NODE_HOST}:8500"
-#cloudctl catalog load-ppa-archive -a $MCM_PATH/${PARAM_PPA_ARCHIVE_NAME} --registry ${PARAM_MASTER_NODE_HOST}:8500
+#cloudctl login
+echo "cloudctl login -u ${PARAM_AUTH_USER} -p ${PARAM_AUTH_PASSWORD} -a https://${PARAM_MASTER_NODE_HOST}:8443 -n kube-system --skip-ssl-validation"
+sudo cloudctl login -u ${PARAM_AUTH_USER} -p ${PARAM_AUTH_PASSWORD} -a https://${PARAM_MASTER_NODE_HOST}:8443 -n kube-system --skip-ssl-validation
+
+#cloudctl load-ppa-archive
+echo "cloudctl catalog load-ppa-archive -a $MCM_PATH/${PARAM_PPA_ARCHIVE_NAME} --registry ${PARAM_MASTER_NODE_HOST}:8500/kube-system"
+sudo cloudctl catalog load-ppa-archive -a $MCM_PATH/${PARAM_PPA_ARCHIVE_NAME} --registry ${PARAM_MASTER_NODE_HOST}:8500/kube-system
 
 #https://www.ibm.com/support/knowledgecenter/en/SSBS6K_3.1.0/troubleshoot/auth_error.html
-tar -xzvf $MCM_PATH/${PARAM_PPA_ARCHIVE_NAME}
+#tar -xzvf $MCM_PATH/${PARAM_PPA_ARCHIVE_NAME}
 
-echo "docker login -u ${PARAM_AUTH_USER} -p ** ${PARAM_MASTER_NODE_HOST}:8500"
+#echo "docker login -u ${PARAM_AUTH_USER} -p ** ${PARAM_MASTER_NODE_HOST}:8500"
 
-for i in `ls images/*`;
-do
-echo $i;
-echo docker load -i $i 
-docker load -i $i | tee -a /tmp/mcm_image_loadd.txt
-done
+#for i in `ls images/*`;
+#do
+#echo $i;
+#echo docker load -i $i 
+#docker load -i $i | tee -a /tmp/mcm_image_loadd.txt
+#done
 
-for chart in `ls charts/*`;
-do
-echo $chart;
-echo cloudctl catalog load-chart --archive $chart 
-cloudctl catalog load-chart --archive $chart
-done
+#for chart in `ls charts/*`;
+#do
+#echo $chart;
+#echo cloudctl catalog load-chart --archive $chart 
+#cloudctl catalog load-chart --archive $chart
+#echo "Done"
+#done
