@@ -142,11 +142,11 @@ function check_command_and_install() {
 #fi
 
 # docker login
-echo "docker login -u ${PARAM_AUTH_USER} -p ** ${PARAM_CLUSTER_NAME}:8500"
+echo "docker login -u ${PARAM_AUTH_USER} -p ****** ${PARAM_CLUSTER_NAME}:8500"
 sudo docker login -u ${PARAM_AUTH_USER} -p ${PARAM_AUTH_PASSWORD} ${PARAM_CLUSTER_NAME}:8500
 
 #cloudctl login
-echo "cloudctl login -u ${PARAM_AUTH_USER} -p ${PARAM_AUTH_PASSWORD} -a https://${PARAM_CLUSTER_NAME}:8443 -n kube-system --skip-ssl-validation"
+echo "cloudctl login -u ${PARAM_AUTH_USER} -p ****** -a https://${PARAM_CLUSTER_NAME}:8443 -n kube-system --skip-ssl-validation"
 sudo cloudctl login -u ${PARAM_AUTH_USER} -p ${PARAM_AUTH_PASSWORD} -a https://${PARAM_CLUSTER_NAME}:8443 -n kube-system --skip-ssl-validation
 
 #cloudctl load-ppa-archive
