@@ -142,16 +142,16 @@ function check_command_and_install() {
 #fi
 
 # docker login
-echo "docker login -u ${PARAM_AUTH_USER} -p ** ${PARAM_MASTER_NODE_HOST}:8500"
-sudo docker login -u ${PARAM_AUTH_USER} -p ${PARAM_AUTH_PASSWORD} ${PARAM_MASTER_NODE_HOST}:8500
+echo "docker login -u ${PARAM_AUTH_USER} -p ** ${PARAM_CLUSTER_NAME}:8500"
+sudo docker login -u ${PARAM_AUTH_USER} -p ${PARAM_AUTH_PASSWORD} ${PARAM_CLUSTER_NAME}:8500
 
 #cloudctl login
-echo "cloudctl login -u ${PARAM_AUTH_USER} -p ${PARAM_AUTH_PASSWORD} -a https://${PARAM_MASTER_NODE_HOST}:8443 -n kube-system --skip-ssl-validation"
-sudo cloudctl login -u ${PARAM_AUTH_USER} -p ${PARAM_AUTH_PASSWORD} -a https://${PARAM_MASTER_NODE_HOST}:8443 -n kube-system --skip-ssl-validation
+echo "cloudctl login -u ${PARAM_AUTH_USER} -p ${PARAM_AUTH_PASSWORD} -a https://${PARAM_CLUSTER_NAME}:8443 -n kube-system --skip-ssl-validation"
+sudo cloudctl login -u ${PARAM_AUTH_USER} -p ${PARAM_AUTH_PASSWORD} -a https://${PARAM_CLUSTER_NAME}:8443 -n kube-system --skip-ssl-validation
 
 #cloudctl load-ppa-archive
-echo "cloudctl catalog load-ppa-archive -a $MCM_PATH/${PARAM_PPA_ARCHIVE_NAME} --registry ${PARAM_MASTER_NODE_HOST}:8500/kube-system"
-sudo cloudctl catalog load-ppa-archive -a $MCM_PATH/${PARAM_PPA_ARCHIVE_NAME} --registry ${PARAM_MASTER_NODE_HOST}:8500/kube-system
+echo "cloudctl catalog load-ppa-archive -a $MCM_PATH/${PARAM_PPA_ARCHIVE_NAME} --registry ${PARAM_CLUSTER_NAME}:8500/kube-system"
+sudo cloudctl catalog load-ppa-archive -a $MCM_PATH/${PARAM_PPA_ARCHIVE_NAME} --registry ${PARAM_CLUSTER_NAME}:8500/kube-system
 
 #https://www.ibm.com/support/knowledgecenter/en/SSBS6K_3.1.0/troubleshoot/auth_error.html
 #tar -xzvf $MCM_PATH/${PARAM_PPA_ARCHIVE_NAME}

@@ -12,14 +12,14 @@ resource "null_resource" "config_mcm_download_dependsOn" {
 
 resource "null_resource" "mkdir-boot-node" {
   depends_on = ["null_resource.config_mcm_download_dependsOn"]
-  #count = "${length(var.boot_ipv4_address_list)}"
+  #count = "${length(var.master_ipv4_address_list)}"
   connection {
     type = "ssh"
     user = "${var.vm_os_user}"
     password =  "${var.vm_os_password}"
     private_key = "${length(var.private_key) > 0 ? base64decode(var.private_key) : ""}"
-    #host = "${var.boot_ipv4_address_list[count.index]}"
-    host = "${var.boot_ipv4_address}"
+    #host = "${var.master_ipv4_address_list[count.index]}"
+    host = "${var.master_ipv4_address}"
     bastion_host        = "${var.bastion_host}"
     bastion_user        = "${var.bastion_user}"
     bastion_private_key = "${length(var.bastion_private_key) > 0 ? base64decode(var.bastion_private_key) : var.bastion_private_key}"
@@ -37,14 +37,14 @@ resource "null_resource" "mkdir-boot-node" {
 resource "null_resource" "download_mcm_ppa_images" {
   depends_on = ["null_resource.mkdir-boot-node",]
 
-  #count = "${ length(var.boot_ipv4_address_list) > 0 ? length(var.boot_ipv4_address_list) : 0}"
+  #count = "${ length(var.master_ipv4_address_list) > 0 ? length(var.master_ipv4_address_list) : 0}"
   connection {
     type = "ssh"
     user = "${var.vm_os_user}"
     password =  "${var.vm_os_password}"
     private_key = "${length(var.private_key) > 0 ? base64decode(var.private_key) : ""}"
-    #host = "${var.boot_ipv4_address_list[count.index]}"
-    host = "${var.boot_ipv4_address}"
+    #host = "${var.master_ipv4_address_list[count.index]}"
+    host = "${var.master_ipv4_address}"
     bastion_host        = "${var.bastion_host}"
     bastion_user        = "${var.bastion_user}"
     bastion_private_key = "${ length(var.bastion_private_key) > 0 ? base64decode(var.bastion_private_key) : var.bastion_private_key}"
@@ -73,14 +73,14 @@ resource "null_resource" "download_mcm_ppa_images" {
 resource "null_resource" "prep_mcm" {
   depends_on = ["null_resource.mkdir-boot-node", "null_resource.download_mcm_ppa_images"]
 
-  #count = "${length(var.boot_ipv4_address_list)}"
+  #count = "${length(var.master_ipv4_address_list)}"
   connection {
     type = "ssh"
     user = "${var.vm_os_user}"
     password =  "${var.vm_os_password}"
     private_key = "${length(var.private_key) > 0 ? base64decode(var.private_key) : ""}"
-    #host = "${var.boot_ipv4_address_list[count.index]}"
-    host = "${var.boot_ipv4_address}"
+    #host = "${var.master_ipv4_address_list[count.index]}"
+    host = "${var.master_ipv4_address}"
     bastion_host        = "${var.bastion_host}"
     bastion_user        = "${var.bastion_user}"
     bastion_private_key = "${ length(var.bastion_private_key) > 0 ? base64decode(var.bastion_private_key) : var.bastion_private_key}"
@@ -105,14 +105,14 @@ resource "null_resource" "prep_mcm" {
 resource "null_resource" "load_mcm_ppa_image" {
   depends_on = ["null_resource.mkdir-boot-node", "null_resource.prep_mcm"]
 
-  #count = "${length(var.boot_ipv4_address_list)}"
+  #count = "${length(var.master_ipv4_address_list)}"
   connection {
     type = "ssh"
     user = "${var.vm_os_user}"
     password =  "${var.vm_os_password}"
     private_key = "${length(var.private_key) > 0 ? base64decode(var.private_key) : ""}"
-    #host = "${var.boot_ipv4_address_list[count.index]}"
-    host = "${var.boot_ipv4_address}"
+    #host = "${var.master_ipv4_address_list[count.index]}"
+    host = "${var.master_ipv4_address}"
     bastion_host        = "${var.bastion_host}"
     bastion_user        = "${var.bastion_user}"
     bastion_private_key = "${ length(var.bastion_private_key) > 0 ? base64decode(var.bastion_private_key) : var.bastion_private_key}"

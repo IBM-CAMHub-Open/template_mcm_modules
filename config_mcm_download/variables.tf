@@ -10,7 +10,7 @@ variable "mcm_version"          { type = "string"  description = "Version of mcm
 variable "icp_version"          { type = "string"  description = "Version of target ICP cluster"}
 variable "icp_user"             { type = "string"  description = "IBM Cloud Private admin user use to load ppa package"}
 variable "icp_user_password"    { type = "string"  description = "IBM Cloud Private admin user password"}
-variable "cluster_name"         { type = "string"  description = "Kubernetes cluster name"}
+variable "cluster_name"         { type = "string"  description = "Kubernetes CA domain of the cluster , like mycluster.icp "}
 variable "secret_name"          { type = "string"  description = "MCM Kubelet secret"}
 variable "download_user"        { type = "string"  description = "Repository User Name (Optional)" }    
 variable "download_user_password"  { type = "string" description = "Repository User Password (Optional)"}  
