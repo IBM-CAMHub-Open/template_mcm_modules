@@ -96,8 +96,8 @@ resource "null_resource" "prep_mcm" {
   provisioner "remote-exec" {
     inline = [
       "chmod 755 ~/ibm-mcm-${var.mcm_version}/mcm_prereq.sh",
-      "echo ~/ibm-mcm-${var.mcm_version}/mcm_prereq.sh ${var.secret_name} ${var.cluster_name} ${var.icp_user} ${var.icp_user_password} ${var.master_ipv4_address} ${var.icp_version}",
-      "bash -c '~/ibm-mcm-${var.mcm_version}/mcm_prereq.sh ${var.secret_name} ${var.cluster_name} ${var.icp_user} ${var.icp_user_password} ${var.master_ipv4_address} ${var.icp_version}'"
+      "echo ~/ibm-mcm-${var.mcm_version}/mcm_prereq.sh ${var.secret_name} ${var.cluster_name} ${var.icp_user} ${var.icp_user_password} ${var.icp_version}",
+      "bash -c '~/ibm-mcm-${var.mcm_version}/mcm_prereq.sh ${var.secret_name} ${var.cluster_name} ${var.icp_user} ${var.icp_user_password} ${var.icp_version}'"
     ]
   }
 }
@@ -133,8 +133,8 @@ resource "null_resource" "load_mcm_ppa_image" {
   provisioner "remote-exec" {
     inline = [
       "chmod 755 ~/ibm-mcm-${var.mcm_version}/mcm_install.sh",
-      "echo ~/ibm-mcm-${var.mcm_version}/mcm_install.sh  -v ${var.mcm_version} -u ${var.icp_user} -p ${var.icp_user_password} -a ${var.mcm_binary_url} -c ${var.cluster_name} -m ${var.master_ipv4_address}",
-      "bash -c '~/ibm-mcm-${var.mcm_version}/mcm_install.sh -v ${var.mcm_version} -u ${var.icp_user} -p ${var.icp_user_password} -a ${var.mcm_binary_url} -c ${var.cluster_name} -m ${var.master_ipv4_address}'"
+      "echo ~/ibm-mcm-${var.mcm_version}/mcm_install.sh  -v ${var.mcm_version} -u ${var.icp_user} -p ${var.icp_user_password} -a ${var.mcm_binary_url} -c ${var.cluster_name}",
+      "bash -c '~/ibm-mcm-${var.mcm_version}/mcm_install.sh -v ${var.mcm_version} -u ${var.icp_user} -p ${var.icp_user_password} -a ${var.mcm_binary_url} -c ${var.cluster_name}'"
     ]
   }
 

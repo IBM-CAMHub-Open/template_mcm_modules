@@ -8,11 +8,10 @@
 #
 
 helm_secret=$1
-mycluster=$2
+cluster_name=$2
 admin_user=$3
 admin_password=$4
-host=$5
-icp_version=$6
+icp_version=$5
 
 helm_version=2.9.1
 
@@ -32,21 +31,21 @@ fi
 
 if ! which kubectl; then
 	echo "install kubectl"
-	curl -kLo kubectl-linux-${systemArch} https://${host}:8443/api/cli/kubectl-linux-amd64	
+	curl -kLo kubectl-linux-${systemArch} https://${cluster_name}:8443/api/cli/kubectl-linux-amd64	
 	chmod +x ./kubectl-linux-${systemArch}	
 	sudo mv ./kubectl-linux-${systemArch} /usr/local/bin/kubectl
 fi
 
 if ! which cloudctl; then
 	echo "install kubectl"
-	curl -kLo "cloudctl-linux-${systemArch}" https://${host}:8443/api/cli/cloudctl-linux-amd64
+	curl -kLo "cloudctl-linux-${systemArch}" https://${cluster_name}:8443/api/cli/cloudctl-linux-amd64
 	chmod +x "./cloudctl-linux-${systemArch}"
 	sudo mv "./cloudctl-linux-${systemArch}" /usr/local/bin/cloudctl
 fi
 
 if ! which helm; then
 	echo " Getting helm from icp ... "
-    curl -kLo "helm-linux-${systemArch}-v2.9.1.tar.gz" https://${host}:8443/api/cli/helm-linux-amd64.tar.gz	
+    curl -kLo "helm-linux-${systemArch}-v2.9.1.tar.gz" https://${cluster_name}:8443/api/cli/helm-linux-amd64.tar.gz	
 	tar -xvf "helm-linux-${systemArch}-v2.9.1.tar.gz"
 	chmod +x  "./linux-${systemArch}/helm"
 	sudo mv "./linux-${systemArch}/helm" /usr/local/bin/helm	
@@ -64,12 +63,17 @@ if [[ "${icp_version}" == "2.1.0.3" ]]; then
 		bx plugin install -f icp-linux-${systemArch}
 	fi
 	echo "run bx pr login"
-	bx pr login -a https://localhost:8443 --skip-ssl-validation -u ${admin_user} -p ${admin_password} -c id-${mycluster}-account
+	bx pr login -a https://localhost:8443 --skip-ssl-validation -u ${admin_user} -p ${admin_password} -c id-${cluster_name}-account
 fi
 
 if which cloudctl; then
-    echo "cloudctl login -a https://${host}:8443 --skip-ssl-validation -u ${admin_user} -p ** -c id-${mycluster}-account -n kube-system"
-	cloudctl login -a https://${host}:8443 --skip-ssl-validation -u ${admin_user} -p ${admin_password} -c id-${mycluster}-account -n kube-system
+    #echo "cloudctl login -a https://${host}:8443 --skip-ssl-validation -u ${admin_user} -p ** -c id-${cluster_name}-account -n kube-system"
+	#cloudctl login -a https://${host}:8443 --skip-ssl-validation -u ${admin_user} -p ${admin_password} -c id-${cluster_name}-account -n kube-system
+
+	#cloudctl login
+    echo "cloudctl login -u ${admin_user} -p ****** -a https://${cluster_name}:8443 -n kube-system --skip-ssl-validation"
+    sudo cloudctl login -u ${admin_user} -p ${admin_password} -a https://${cluster_name}:8443 -n kube-system --skip-ssl-validation
+
 fi
 
 

@@ -9,8 +9,6 @@ while test $# -gt 0; do
   [[ $1 =~ ^-u|--user ]] && { PARAM_AUTH_USER="${2}"; shift 2; continue; };
   [[ $1 =~ ^-p|--password ]] && { PARAM_AUTH_PASSWORD="${2}"; shift 2; continue; };
   [[ $1 =~ ^-a|--archive ]] && { PARAM_MCM="${2}"; shift 2; continue; };
-  [[ $1 =~ ^-m|--master-node-host ]] && { PARAM_MASTER_NODE_HOST="${2}"; shift 2; continue; };
-  [[ $1 =~ ^-P|--master-node-port ]] && { PARAM_MASTER_NODE_PORT="${2}"; shift 2; continue; };
   break;
 done
 
@@ -152,23 +150,3 @@ sudo cloudctl login -u ${PARAM_AUTH_USER} -p ${PARAM_AUTH_PASSWORD} -a https://$
 #cloudctl load-ppa-archive
 echo "cloudctl catalog load-ppa-archive -a $MCM_PATH/${PARAM_PPA_ARCHIVE_NAME} --registry ${PARAM_CLUSTER_NAME}:8500/kube-system"
 sudo cloudctl catalog load-ppa-archive -a $MCM_PATH/${PARAM_PPA_ARCHIVE_NAME} --registry ${PARAM_CLUSTER_NAME}:8500/kube-system
-
-#https://www.ibm.com/support/knowledgecenter/en/SSBS6K_3.1.0/troubleshoot/auth_error.html
-#tar -xzvf $MCM_PATH/${PARAM_PPA_ARCHIVE_NAME}
-
-#echo "docker login -u ${PARAM_AUTH_USER} -p ** ${PARAM_MASTER_NODE_HOST}:8500"
-
-#for i in `ls images/*`;
-#do
-#echo $i;
-#echo docker load -i $i 
-#docker load -i $i | tee -a /tmp/mcm_image_loadd.txt
-#done
-
-#for chart in `ls charts/*`;
-#do
-#echo $chart;
-#echo cloudctl catalog load-chart --archive $chart 
-#cloudctl catalog load-chart --archive $chart
-#echo "Done"
-#done
