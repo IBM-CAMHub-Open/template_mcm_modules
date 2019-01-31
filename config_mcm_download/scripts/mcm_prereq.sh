@@ -78,4 +78,4 @@ fi
 
 
 echo "kubectl create secret tls ${helm_secret} --key ~/.helm/key.pem --cert ~/.helm/cert.pem -n kube-system"
-kubectl create secret tls ${helm_secret} --key ~/.helm/key.pem  --cert ~/.helm/cert.pem -n kube-system
+sudo kubectl create secret tls ${helm_secret} --key ~/.helm/key.pem  --cert ~/.helm/cert.pem -n kube-system
