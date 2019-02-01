@@ -17,13 +17,13 @@ mycluster=$6
 
 # CLIs should be installed
 if [[ "${icp_version}" == "2.1.0.3" ]]; then
-    bx pr login -a https://localhost:8443 --skip-ssl-validation -u ${admin_user} -p ${admin_password} -c id-${mycluster}-account
-    bx pr delete-helm-chart --name ibm-mcm-prod
-    bx pr delete-helm-chart --name ibm-mcmk-prod
+    sudo bx pr login -a https://localhost:8443 --skip-ssl-validation -u ${admin_user} -p ${admin_password} -c id-${mycluster}-account
+    sudo bx pr delete-helm-chart --name ibm-mcm-prod
+    sudo bx pr delete-helm-chart --name ibm-mcmk-prod
 else
-    cloudctl login -a https://${host}:8443 --skip-ssl-validation -u ${admin_user} -p ${admin_password} -c id-${mycluster}-account -n kube-system
-    cloudctl catalog delete-chart --name ibm-mcm-prod
-    cloudctl catalog delete-chart --name ibm-mcmk-prod
+    sudo cloudctl login -a https://${host}:8443 --skip-ssl-validation -u ${admin_user} -p ${admin_password} -c id-${mycluster}-account -n kube-system
+    sudo cloudctl catalog delete-chart --name ibm-mcm-prod
+    sudo cloudctl catalog delete-chart --name ibm-mcmk-prod
 fi
 
 #kubectl delete secret ${helm_secret} -n kube-system
