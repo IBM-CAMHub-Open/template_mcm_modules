@@ -152,5 +152,5 @@ echo "cloudctl catalog load-ppa-archive -a $MCM_PATH/${PARAM_PPA_ARCHIVE_NAME} -
 sudo cloudctl catalog load-ppa-archive -a $MCM_PATH/${PARAM_PPA_ARCHIVE_NAME} --registry ${PARAM_CLUSTER_NAME}:8500/kube-system
 
 #wait for the mcm charts to become available 
-sudo until cloudctl catalog charts | grep ibm-mcm-prod; do sleep 1 | echo "waiting for ibm-mcm-prod..."; done
-sudo until cloudctl catalog charts | grep ibm-mcmk-prod; do sleep 1 | echo "waiting for ibm-mck-prod..."; done
+until sudo cloudctl catalog charts | grep ibm-mcm-prod; do sleep 1 | echo "waiting for ibm-mcm-prod..."; done
+until sudo cloudctl catalog charts | grep ibm-mcmk-prod; do sleep 1 | echo "waiting for ibm-mck-prod..."; done
