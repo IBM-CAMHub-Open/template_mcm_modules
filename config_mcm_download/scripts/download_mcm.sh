@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -e
 # Get script parameters
 #while [[ $${1:0:1} == - ]]; do
 while test $# -gt 0; do

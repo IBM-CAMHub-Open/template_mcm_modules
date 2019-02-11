@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# set -x
+set -e
 
 # Get script parameters
 while test $# -gt 0; do
@@ -151,6 +151,38 @@ sudo cloudctl login -u ${PARAM_AUTH_USER} -p ${PARAM_AUTH_PASSWORD} -a https://$
 echo "cloudctl catalog load-ppa-archive -a $MCM_PATH/${PARAM_PPA_ARCHIVE_NAME} --registry ${PARAM_CLUSTER_NAME}:8500/kube-system"
 sudo cloudctl catalog load-ppa-archive -a $MCM_PATH/${PARAM_PPA_ARCHIVE_NAME} --registry ${PARAM_CLUSTER_NAME}:8500/kube-system
 
-#wait for the mcm charts to become available 
-until sudo cloudctl catalog charts | grep ibm-mcm-prod; do sleep 1 | echo "waiting for ibm-mcm-prod..."; done
-until sudo cloudctl catalog charts | grep ibm-mcmk-prod; do sleep 1 | echo "waiting for ibm-mck-prod..."; done
+#wait for the ibm-mcm-prod chart to become available 
+n=0
+exit_code=0
+until [ $n -ge 5 ]
+do
+  sudo cloudctl catalog charts | grep ibm-mcm-prod && break 
+  exit_code=$?
+  n=$[$n+1]
+  echo "waiting for ibm-mcm-prod...";
+  sleep 5
+done
+if [ $exit_code -eq 0 ]; then
+    echo "ibm-mcm-prod loaded successfully"
+else
+    echo "ibm-mcm-prod failed to load successfully"
+    exit
+fi
+
+#wait for the ibm-mcmk-prod chart to become available 
+n=0
+exit_code=0
+until [ $n -ge 5 ]
+do
+  sudo cloudctl catalog charts | grep ibm-mcmk-prod && break
+  exit_code=$?
+  n=$[$n+1]
+  echo "waiting for ibm-mcmk-prod...";
+  sleep 5
+done
+if [ $exit_code -eq 0 ]; then
+    echo "ibm-mcmk-prod loaded successfully"
+else
+    echo "ibm-mcmk-prod failed to load successfully"
+    exit
+fi

@@ -6,6 +6,7 @@
 #US Government Users Restricted Rights - Use, duplication or
 #disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
 #
+set -e
 
 helm_secret=$1
 cluster_name=$2

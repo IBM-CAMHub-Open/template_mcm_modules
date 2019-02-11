@@ -7,6 +7,7 @@
 #disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
 #
 
+set -e
 
 helm_secret=$1
 admin_user=$2
