@@ -143,7 +143,7 @@ resource "null_resource" "load_mcm_ppa_image" {
     inline = [
       "chmod 755 ~/ibm-mcm-${var.mcm_version}/mcm_cleanup.sh",
       "echo ~/ibm-mcm-${var.mcm_version}/mcm_cleanup.sh ${var.secret_name} ${var.icp_user} ${var.icp_user_password} ${var.master_ipv4_address} ${var.icp_version} ${var.cluster_name}",
-      "bash -c '~/ibm-mcm-${var.mcm_version}/mcm_cleanup.sh ${var.secret_name} ${var.icp_user} ${var.icp_user_password} ${var.master_ipv4_address} ${var.icp_version} ${var.cluster_name}'"
+      "bash -c '~/ibm-mcm-${var.mcm_version}/mcm_cleanup.sh ${var.secret_name} ${var.icp_user} ${var.icp_user_password} ${var.master_ipv4_address} ${var.icp_version} ${var.mcm_version} ${var.cluster_name}'"
     ]
   }
 }

@@ -14,8 +14,10 @@ admin_user=$2
 admin_password=$3
 host=$4
 icp_version=$5
-mycluster=$6
+mcm_version=$6
+mycluster=$7
 
+MCM_PATH=~/ibm-mcm-${mcm_version}
 # CLIs should be installed
 if [[ "${icp_version}" == "2.1.0.3" ]]; then
     sudo bx pr login -a https://localhost:8443 --skip-ssl-validation -u ${admin_user} -p ${admin_password} -c id-${mycluster}-account
@@ -27,4 +29,5 @@ else
     sudo cloudctl catalog delete-chart --name ibm-mcmk-prod
 fi
 
-#kubectl delete secret ${helm_secret} -n kube-system
+kubectl delete secret ${helm_secret} -n kube-system
+rm -fr ${MCM_PATH}
