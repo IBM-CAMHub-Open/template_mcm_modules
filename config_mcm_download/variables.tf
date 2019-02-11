@@ -6,11 +6,11 @@ variable "private_key"          { type = "string"  description = "Private SSH ke
 variable "random"               { type = "string"  description = "Random String Generated"}
 variable "dependsOn"            { default = "true" description = "Boolean for dependency"}
 variable "mcm_binary_url"       { type = "string"  description = "IBM Cloud Private mcm Download Location (http|https|ftp|file)"}
-variable "mcm_version"          { type = "string"  description = "Version of mcm to be Installed"}
 variable "icp_version"          { type = "string"  description = "Version of target ICP cluster"}
 variable "icp_user"             { type = "string"  description = "IBM Cloud Private admin user use to load ppa package"}
 variable "icp_user_password"    { type = "string"  description = "IBM Cloud Private admin user password"}
-variable "cluster_name"         { type = "string"  description = "Kubernetes CA domain of the cluster , like mycluster.icp "}
+variable "cluster_ca_name"      { type = "string"  description = "Kubernetes CA domain of the cluster , like mycluster.icp "}
+variable "cluster_name"         { type = "string"  description = "Kubernetes cluster name, like mycluster "}
 variable "secret_name"          { type = "string"  description = "MCM Kubelet secret"}
 variable "download_user"        { type = "string"  description = "Repository User Name (Optional)" }    
 variable "download_user_password"  { type = "string" description = "Repository User Password (Optional)"}  

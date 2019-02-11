@@ -14,20 +14,23 @@ admin_user=$2
 admin_password=$3
 host=$4
 icp_version=$5
-mcm_version=$6
-mycluster=$7
+mycluster=$6
 
-MCM_PATH=~/ibm-mcm-${mcm_version}
+  if ! [ $(whoami) == 'root' ]
+  then
+    sudo chown $(whoami) /home/icpdeploy/.kube/config
+  fi
+
+
 # CLIs should be installed
 if [[ "${icp_version}" == "2.1.0.3" ]]; then
-    sudo bx pr login -a https://localhost:8443 --skip-ssl-validation -u ${admin_user} -p ${admin_password} 
+    sudo bx pr login -a https://localhost:8443 --skip-ssl-validation -u ${admin_user} -p ${admin_password} -c id-${mycluster}-account
     sudo bx pr delete-helm-chart --name ibm-mcm-prod
     sudo bx pr delete-helm-chart --name ibm-mcmk-prod
 else
-    sudo cloudctl login -a https://${host}:8443 --skip-ssl-validation -u ${admin_user} -p ${admin_password}  -n kube-system
+    sudo cloudctl login -a https://${host}:8443 --skip-ssl-validation -u ${admin_user} -p ${admin_password} -c id-${mycluster}-account -n kube-system
     sudo cloudctl catalog delete-chart --name ibm-mcm-prod
     sudo cloudctl catalog delete-chart --name ibm-mcmk-prod
 fi
 
-kubectl delete secret ${helm_secret} -n kube-system
-rm -fr ${MCM_PATH}
+sudo kubectl delete secret ${helm_secret} -n kube-system

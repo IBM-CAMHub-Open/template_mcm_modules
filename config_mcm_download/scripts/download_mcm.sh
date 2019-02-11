@@ -4,7 +4,7 @@ set -e
 #while [[ $${1:0:1} == - ]]; do
 while test $# -gt 0; do
   [[ $1 =~ ^-i|--MCM ]] && { PARAM_MCM="${2}"; shift 2; continue; };
-  [[ $1 =~ ^-v|--version ]] && { PARAM_MCM_VERSION="${2}"; shift 2; continue; };
+  [[ $1 =~ ^-t|--path ]] && { MCM_PATH="${2}"; shift 2; continue; };
   [[ $1 =~ ^-u|--user ]] && { PARAM_AUTH_USER="${2}"; shift 2; continue; };
   [[ $1 =~ ^-p|--password ]] && { PARAM_AUTH_PASSWORD="${2}"; shift 2; continue; };
   break;
@@ -97,7 +97,6 @@ function check_command_and_install() {
 
 
 MCM_INSTALLER_FILE_NAME="$(basename ${PARAM_MCM})"
-MCM_PATH=~/ibm-mcm-${PARAM_MCM_VERSION}
 
 # Identify the platform and version using Python
 if command_exists python; then
@@ -120,8 +119,8 @@ if [ -n $PARAM_MCM ]; then
   # echo "PARAM_MCM: ${PARAM_MCM}"
   if [[ $PARAM_MCM =~ $URL_REGEX ]]; then
     if [[ -e "$MCM_PATH/${MCM_INSTALLER_FILE_NAME}" ]]; then
-      # echo "[*] Previous Downloaded successful of ~/${MCM_INSTALLER_FILE_NAME}"
-      printf "\033[32m[*] Previous Downloaded successful of ~/${MCM_INSTALLER_FILE_NAME}\033[0m\n"
+      echo "[*] Previous Downloaded successful of $MCM_PATH/${MCM_INSTALLER_FILE_NAME}"
+      printf "\033[32m[*] Previous Downloaded successful of  $MCM_PATH/${MCM_INSTALLER_FILE_NAME}\033[0m\n"
     else
       echo "[*] MCM TAR File URL was provided: $PARAM_MCM"
       DOCKER_URL=$PARAM_MCM
@@ -129,7 +128,7 @@ if [ -n $PARAM_MCM ]; then
       echo "download_file 'MCM TAR File' $DOCKER_URL $MCM_PATH/${MCM_INSTALLER_FILE_NAME}  ${PARAM_AUTH_USER} ${PARAM_AUTH_PASSWORD}"
       
       download_file 'MCM TAR File' $DOCKER_URL $MCM_PATH/${MCM_INSTALLER_FILE_NAME}  ${PARAM_AUTH_USER} ${PARAM_AUTH_PASSWORD}
-      [[ -e "$MCM_PATH/${MCM_INSTALLER_FILE_NAME}" ]] && printf "\033[32m[*] Downloaded successful of $MCM_PATH/${MCM_INSTALLER_FILE_NAME}\033[0m\n" || { printf "\033[31m[ERROR] failed to download file $MCM_PATH/${MCM_INSTALLER_FILE_NAME} from ${DOCKER_URL}\033[0m\n" ; exit 1; }
+      [[ -e "$MCM_PATH/${MCM_INSTALLER_FILE_NAME}" ]] && printf "\033[32m[*] Download successful of $MCM_PATH/${MCM_INSTALLER_FILE_NAME}\033[0m\n" || { printf "\033[31m[ERROR] failed to download file $MCM_PATH/${MCM_INSTALLER_FILE_NAME} from ${DOCKER_URL}\033[0m\n" ; exit 1; }
       
       chmod +x $MCM_PATH/${MCM_INSTALLER_FILE_NAME}
     fi 
