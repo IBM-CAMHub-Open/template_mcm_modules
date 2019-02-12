@@ -131,8 +131,7 @@ if [ -n $PARAM_MCM ]; then
       [[ -e "$MCM_PATH/${MCM_INSTALLER_FILE_NAME}" ]] && printf "\033[32m[*] Download successful of $MCM_PATH/${MCM_INSTALLER_FILE_NAME}\033[0m\n" || { printf "\033[31m[ERROR] failed to download file $MCM_PATH/${MCM_INSTALLER_FILE_NAME} from ${DOCKER_URL}\033[0m\n" ; exit 1; }
       
       chmod +x $MCM_PATH/${MCM_INSTALLER_FILE_NAME}
-    fi 
-
+    fi
   else
       # echo "[ERROR] Docker Binary URL is not Valid, check $PARAM_MCM"
       printf "\033[31m[ERROR] MCM Binary URL is not Valid, check $PARAM_MCM\033[0m\n"

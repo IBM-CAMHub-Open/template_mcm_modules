@@ -60,8 +60,8 @@ resource "null_resource" "load_mcm_ppa_image" {
       "bash -c '/tmp/download_mcm.sh -i ${var.mcm_binary_url} -t /tmp/${var.random} ${local.download_user} ${local.download_user_password}'",
 
       "chmod 755 /tmp/mcm_prereq.sh",
-      "echo /tmp/mcm_prereq.sh ${var.secret_name} ${var.cluster_ca_name} ${var.cluster_name} ${var.icp_user} ${var.icp_user_password} ${var.icp_version}",
-      "bash -c '/tmp/mcm_prereq.sh ${var.secret_name} ${var.cluster_ca_name} ${var.cluster_name} ${var.icp_user} ${var.icp_user_password} ${var.icp_version}'",
+      "echo /tmp/mcm_prereq.sh ${var.secret_name} ${var.cluster_ca_name} ${var.cluster_name} ${var.icp_user} ${var.icp_user_password}",
+      "bash -c '/tmp/mcm_prereq.sh ${var.secret_name} ${var.cluster_ca_name} ${var.cluster_name} ${var.icp_user} ${var.icp_user_password}'",
 
       "chmod 755 /tmp/mcm_install.sh",
       "echo /tmp/mcm_install.sh  -u ${var.icp_user} -t /tmp/${var.random} -p ${var.icp_user_password} -a ${var.mcm_binary_url} -c ${var.cluster_ca_name} -n ${var.cluster_name}",
@@ -74,12 +74,11 @@ resource "null_resource" "load_mcm_ppa_image" {
     inline = [
       "rm -rf /tmp/${var.random}/",   
       "chmod 755 /tmp/mcm_cleanup.sh",
-      "echo /tmp/mcm_cleanup.sh ${var.secret_name} ${var.icp_user} ${var.icp_user_password} ${var.master_ipv4_address} ${var.icp_version} ${var.cluster_name}",
-      "bash -c '/tmp/mcm_cleanup.sh ${var.secret_name} ${var.icp_user} ${var.icp_user_password} ${var.master_ipv4_address} ${var.icp_version} ${var.cluster_name}'"
+      "echo /tmp/mcm_cleanup.sh ${var.secret_name} ${var.icp_user} ${var.icp_user_password} ${var.master_ipv4_address} ${var.cluster_name}",
+      "bash -c '/tmp/mcm_cleanup.sh ${var.secret_name} ${var.icp_user} ${var.icp_user_password} ${var.master_ipv4_address} ${var.cluster_name}'"
     ]
   }
-  
-}  
+} 
 
 resource "null_resource" "docker_install_finished" {
   depends_on = ["null_resource.load_mcm_ppa_image","null_resource.config_mcm_download_dependsOn"]

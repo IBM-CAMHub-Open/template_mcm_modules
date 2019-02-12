@@ -13,7 +13,6 @@ cluster_ca_name=$2
 cluster_name=$3
 admin_user=$4
 admin_password=$5
-icp_version=$6
 
 helm_version=2.9.1
 
@@ -39,7 +38,7 @@ if ! which kubectl; then
 fi
 
 if ! which cloudctl; then
-	echo "install kubectl"
+	echo "install cloudctl"
 	curl -kLo "cloudctl-linux-${systemArch}" https://${cluster_ca_name}:8443/api/cli/cloudctl-linux-amd64
 	chmod +x "./cloudctl-linux-${systemArch}"
 	sudo mv "./cloudctl-linux-${systemArch}" /usr/local/bin/cloudctl
@@ -55,23 +54,7 @@ if ! which helm; then
 	export HELM_HOME=~/.helm
 fi
 
-if [[ "${icp_version}" == "2.1.0.3" ]]; then
-	if ! which bx; then
-		echo "installing bx client"
-		# the following script handles ppc64le automagically !!
-		curl -fsSL https://clis.ng.bluemix.net/install/linux | sh
-		rm -f icp-linux-${systemArch}
-		wget https://localhost:8443/api/cli/icp-linux-${systemArch} --no-check-certificate
-		bx plugin install -f icp-linux-${systemArch}
-	fi
-	echo "run bx pr login"
-	bx pr login -a https://localhost:8443 --skip-ssl-validation -u ${admin_user} -p ${admin_password} -c id-${cluster_name}-account
-fi
-
 if which cloudctl; then
-    #echo "cloudctl login -a https://${host}:8443 --skip-ssl-validation -u ${admin_user} -p ** -c id-${cluster_name}-account -n kube-system"
-	#cloudctl login -a https://${host}:8443 --skip-ssl-validation -u ${admin_user} -p ${admin_password} -c id-${cluster_name}-account -n kube-system
-
 	#cloudctl login
     echo "cloudctl login -u ${admin_user} -p ****** -a https://${cluster_ca_name}:8443 -n kube-system -c id-${cluster_name}-account --skip-ssl-validation"
     if sudo cloudctl login -u ${admin_user} -p ${admin_password} -a https://${cluster_ca_name}:8443 -n kube-system -c id-${cluster_name}-account --skip-ssl-validation ; then
@@ -80,7 +63,6 @@ if which cloudctl; then
        echo "cloudctl login failed"
        exit 1
     fi 
-
 fi
 
 
