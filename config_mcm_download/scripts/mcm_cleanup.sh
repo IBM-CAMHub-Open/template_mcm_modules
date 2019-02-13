@@ -25,4 +25,7 @@ mycluster=$5
 sudo cloudctl login -a https://${host}:8443 --skip-ssl-validation -u ${admin_user} -p ${admin_password} -c id-${mycluster}-account -n kube-system
 sudo cloudctl catalog delete-chart --name ibm-mcm-prod
 sudo cloudctl catalog delete-chart --name ibm-mcmk-prod
-sudo kubectl delete secret ${helm_secret} -n kube-system
+
+if sudo kubectl get secret ${helm_secret}
+	sudo kubectl delete secret ${helm_secret} -n kube-system
+fi	

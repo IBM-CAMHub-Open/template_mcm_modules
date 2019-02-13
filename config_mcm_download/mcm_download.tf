@@ -44,6 +44,11 @@ resource "null_resource" "load_mcm_ppa_image" {
   }
 
   provisioner "file" {
+    source = "${path.module}/scripts/mcm_namespace.json"
+    destination = "/tmp/mcm_namespace.json"
+  }
+
+  provisioner "file" {
     when = "destroy"  
     source = "${path.module}/scripts/mcm_cleanup.sh"
     destination = "/tmp/mcm_cleanup.sh"
