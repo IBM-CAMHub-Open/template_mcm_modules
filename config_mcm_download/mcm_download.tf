@@ -10,8 +10,33 @@ resource "null_resource" "config_mcm_download_dependsOn" {
   }
 }
 
-resource "null_resource" "load_mcm_ppa_image" {
+resource "null_resource" "mkdir-mcm-scripts" {
   depends_on = ["null_resource.config_mcm_download_dependsOn"]
+  #count = "${length(var.master_ipv4_address_list)}"
+  connection {
+    type = "ssh"
+    user = "${var.vm_os_user}"
+    password =  "${var.vm_os_password}"
+    private_key = "${length(var.private_key) > 0 ? base64decode(var.private_key) : ""}"
+    #host = "${var.master_ipv4_address_list[count.index]}"
+    host = "${var.master_ipv4_address}"
+    bastion_host        = "${var.bastion_host}"
+    bastion_user        = "${var.bastion_user}"
+    bastion_private_key = "${length(var.bastion_private_key) > 0 ? base64decode(var.bastion_private_key) : var.bastion_private_key}"
+    bastion_port        = "${var.bastion_port}"
+    bastion_host_key    = "${var.bastion_host_key}"
+    bastion_password    = "${var.bastion_password}"          
+  }
+    provisioner "remote-exec" {
+    inline = [
+      "sudo mkdir -p /var/lib/registry/mcm_scripts",
+      "sudo chown $(whoami) /var/lib/registry/mcm_scripts"
+    ]
+  }
+}
+
+resource "null_resource" "load_mcm_ppa_image" {
+  depends_on = ["null_resource.config_mcm_download_dependsOn", "null_resource.mkdir-mcm-scripts"]
   #count = "${length(var.master_ipv4_address_list)}"
   connection {
     type = "ssh"
@@ -30,63 +55,64 @@ resource "null_resource" "load_mcm_ppa_image" {
 
   provisioner "file" {
     source = "${path.module}/scripts/download_mcm.sh"
-    destination = "/tmp/download_mcm.sh"
+    destination = "/var/lib/registry/mcm_scripts/download_mcm.sh"
   }
 
   provisioner "file" {
     source = "${path.module}/scripts/mcm_prereq.sh"
-    destination = "/tmp/mcm_prereq.sh"
+    destination = "/var/lib/registry/mcm_scripts/mcm_prereq.sh"
   }
 
   provisioner "file" {
     source = "${path.module}/scripts/mcm_install.sh"
-    destination = "/tmp/mcm_install.sh"
+    destination = "/var/lib/registry/mcm_scripts/mcm_install.sh"
   }
 
   provisioner "file" {
     source = "${path.module}/scripts/mcm_namespace.json"
-    destination = "/tmp/mcm_namespace.json"
+    destination = "/var/lib/registry/mcm_scripts/mcm_namespace.json"
   }
 
   provisioner "file" {
     when = "destroy"  
     source = "${path.module}/scripts/mcm_cleanup.sh"
-    destination = "/tmp/mcm_cleanup.sh"
+    destination = "/var/lib/registry/mcm_scripts/mcm_cleanup.sh"
   }
   
   
     provisioner "remote-exec" {
     inline = [
     
-      "mkdir -p /tmp/${var.random}",
+      "sudo mkdir -p /var/lib/registry/mcm_scripts/${var.random}",
+      "sudo chown $(whoami) /var/lib/registry/mcm_scripts/${var.random}",      
       
-      "chmod 755 /tmp/download_mcm.sh",
-      "echo \"/tmp/download_mcm.sh -i ${var.mcm_binary_url} -t /tmp/${var.random} ${local.download_user} ${local.download_user_password}\"",
-      "bash -c '/tmp/download_mcm.sh -i ${var.mcm_binary_url} -t /tmp/${var.random} ${local.download_user} ${local.download_user_password}'",
+      "chmod 755 /var/lib/registry/mcm_scripts/download_mcm.sh",
+      "echo \"/var/lib/registry/mcm_scripts/download_mcm.sh -i ${var.mcm_binary_url} -t /var/lib/registry/mcm_scripts/${var.random} ${local.download_user} ${local.download_user_password}\"",
+      "bash -c '/var/lib/registry/mcm_scripts/download_mcm.sh -i ${var.mcm_binary_url} -t /var/lib/registry/mcm_scripts/${var.random} ${local.download_user} ${local.download_user_password}'",
 
-      "chmod 755 /tmp/mcm_prereq.sh",
-      "echo /tmp/mcm_prereq.sh ${var.secret_name} ${var.cluster_ca_name} ${var.cluster_name} ${var.icp_user} ${var.icp_user_password}",
-      "bash -c '/tmp/mcm_prereq.sh ${var.secret_name} ${var.cluster_ca_name} ${var.cluster_name} ${var.icp_user} ${var.icp_user_password}'",
+      "chmod 755 /var/lib/registry/mcm_scripts/mcm_prereq.sh",
+      "echo /var/lib/registry/mcm_scripts/mcm_prereq.sh ${var.secret_name} ${var.cluster_ca_name} ${var.cluster_name} ${var.icp_user} ${var.icp_user_password}",
+      "bash -c '/var/lib/registry/mcm_scripts/mcm_prereq.sh ${var.secret_name} ${var.cluster_ca_name} ${var.cluster_name} ${var.icp_user} ${var.icp_user_password}'",
 
-      "chmod 755 /tmp/mcm_install.sh",
-      "echo /tmp/mcm_install.sh  -u ${var.icp_user} -t /tmp/${var.random} -p ${var.icp_user_password} -a ${var.mcm_binary_url} -c ${var.cluster_ca_name} -n ${var.cluster_name}",
-      "bash -c '/tmp/mcm_install.sh -u ${var.icp_user} -t /tmp/${var.random} -p ${var.icp_user_password} -a ${var.mcm_binary_url} -c ${var.cluster_ca_name} -n ${var.cluster_name}'"      
+      "chmod 755 /var/lib/registry/mcm_scripts/mcm_install.sh",
+      "echo /var/lib/registry/mcm_scripts/mcm_install.sh  -u ${var.icp_user} -t /var/lib/registry/mcm_scripts/${var.random} -p ${var.icp_user_password} -a ${var.mcm_binary_url} -c ${var.cluster_ca_name} -n ${var.cluster_name}",
+      "bash -c '/var/lib/registry/mcm_scripts/mcm_install.sh -u ${var.icp_user} -t /var/lib/registry/mcm_scripts/${var.random} -p ${var.icp_user_password} -a ${var.mcm_binary_url} -c ${var.cluster_ca_name} -n ${var.cluster_name}'"      
     ]
   }
   
   provisioner "remote-exec" {
     when = "destroy"
     inline = [
-      "rm -rf /tmp/${var.random}/",   
-      "chmod 755 /tmp/mcm_cleanup.sh",
-      "echo /tmp/mcm_cleanup.sh ${var.secret_name} ${var.icp_user} ${var.icp_user_password} ${var.master_ipv4_address} ${var.cluster_name}",
-      "bash -c '/tmp/mcm_cleanup.sh ${var.secret_name} ${var.icp_user} ${var.icp_user_password} ${var.master_ipv4_address} ${var.cluster_name}'"
+      "sudo rm -rf /var/lib/registry/mcm_scripts/${var.random}/",   
+      "chmod 755 /var/lib/registry/mcm_scripts/mcm_cleanup.sh",
+       "echo /var/lib/registry/mcm_scripts/mcm_cleanup.sh ${var.secret_name} ${var.icp_user} ${var.icp_user_password} ${var.master_ipv4_address} ${var.cluster_name}",
+      "bash -c '/var/lib/registry/mcm_scripts/mcm_cleanup.sh ${var.secret_name} ${var.icp_user} ${var.icp_user_password} ${var.master_ipv4_address} ${var.cluster_name}'"
     ]
   }
 } 
 
 resource "null_resource" "docker_install_finished" {
-  depends_on = ["null_resource.load_mcm_ppa_image","null_resource.config_mcm_download_dependsOn"]
+  depends_on = ["null_resource.load_mcm_ppa_image","null_resource.config_mcm_download_dependsOn", "null_resource.mkdir-mcm-scripts"]
   provisioner "local-exec" {
     command = "echo 'Docker and mcm Images loaded, has been installed on Nodes'"
   }

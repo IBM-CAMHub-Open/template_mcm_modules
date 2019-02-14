@@ -65,6 +65,9 @@ if which cloudctl; then
     fi 
 fi
 
-
-echo "kubectl create secret tls ${helm_secret} --key ~/.helm/key.pem --cert ~/.helm/cert.pem -n kube-system"
-sudo kubectl create secret tls ${helm_secret} --key ~/.helm/key.pem  --cert ~/.helm/cert.pem -n kube-system
+if ! sudo kubectl get secret ${helm_secret}; then
+	echo "kubectl create secret tls ${helm_secret} --key ~/.helm/key.pem --cert ~/.helm/cert.pem -n kube-system"
+	sudo kubectl create secret tls ${helm_secret} --key ~/.helm/key.pem  --cert ~/.helm/cert.pem -n kube-system
+else
+	echo "secret ${helm_secret} already exists"
+fi

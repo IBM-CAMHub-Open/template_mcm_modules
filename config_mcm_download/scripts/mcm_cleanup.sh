@@ -26,6 +26,6 @@ sudo cloudctl login -a https://${host}:8443 --skip-ssl-validation -u ${admin_use
 sudo cloudctl catalog delete-chart --name ibm-mcm-prod
 sudo cloudctl catalog delete-chart --name ibm-mcmk-prod
 
-if sudo kubectl get secret ${helm_secret}
+if sudo kubectl get secret ${helm_secret}; then
 	sudo kubectl delete secret ${helm_secret} -n kube-system
 fi	
