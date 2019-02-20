@@ -80,12 +80,5 @@ fi
 
 rm -rf $MCM_PATH
 
-sudo sed -i -e "s/@name@/${PARAM_CLUSTER_NAME}/g" /var/lib/registry/mcm_scripts/mcm_namespace.json
-
-if ! sudo kubectl get namespace mcm-${PARAM_CLUSTER_NAME}; then
-	echo "create namespace mcm-${PARAM_CLUSTER_NAME}"
-	echo "call sudo kubectl create -f /var/lib/registry/mcm_scripts/mcm_namespace.json"
-	sudo kubectl create -f /var/lib/registry/mcm_scripts/mcm_namespace.json
-fi	
-
-
+## wait for the repo sync to finish. TODO: helm API?
+sleep 30
