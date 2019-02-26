@@ -12,14 +12,12 @@ resource "null_resource" "config_mcm_download_dependsOn" {
 
 resource "null_resource" "mkdir-mcm-scripts" {
   depends_on = ["null_resource.config_mcm_download_dependsOn"]
-  #count = "${length(var.master_ipv4_address_list)}"
   connection {
     type = "ssh"
     user = "${var.vm_os_user}"
     password =  "${var.vm_os_password}"
     private_key = "${length(var.private_key) > 0 ? base64decode(var.private_key) : ""}"
-    #host = "${var.master_ipv4_address_list[count.index]}"
-    host = "${var.master_ipv4_address}"
+    host = "${var.boot_ipv4_address}"
     bastion_host        = "${var.bastion_host}"
     bastion_user        = "${var.bastion_user}"
     bastion_private_key = "${length(var.bastion_private_key) > 0 ? base64decode(var.bastion_private_key) : var.bastion_private_key}"
@@ -37,14 +35,12 @@ resource "null_resource" "mkdir-mcm-scripts" {
 
 resource "null_resource" "load_mcm_ppa_image" {
   depends_on = ["null_resource.config_mcm_download_dependsOn", "null_resource.mkdir-mcm-scripts"]
-  #count = "${length(var.master_ipv4_address_list)}"
   connection {
     type = "ssh"
     user = "${var.vm_os_user}"
     password =  "${var.vm_os_password}"
     private_key = "${length(var.private_key) > 0 ? base64decode(var.private_key) : ""}"
-    #host = "${var.master_ipv4_address_list[count.index]}"
-    host = "${var.master_ipv4_address}"
+    host = "${var.boot_ipv4_address}"
     bastion_host        = "${var.bastion_host}"
     bastion_user        = "${var.bastion_user}"
     bastion_private_key = "${length(var.bastion_private_key) > 0 ? base64decode(var.bastion_private_key) : var.bastion_private_key}"
@@ -105,8 +101,8 @@ resource "null_resource" "load_mcm_ppa_image" {
     inline = [
       "sudo rm -rf /var/lib/registry/mcm_scripts/${var.random}/",   
       "chmod 755 /var/lib/registry/mcm_scripts/mcm_cleanup.sh",
-       "echo /var/lib/registry/mcm_scripts/mcm_cleanup.sh ${var.secret_name} ${var.icp_user} ${var.icp_user_password} ${var.master_ipv4_address} ${var.cluster_name}",
-      "bash -c '/var/lib/registry/mcm_scripts/mcm_cleanup.sh ${var.secret_name} ${var.icp_user} ${var.icp_user_password} ${var.master_ipv4_address} ${var.cluster_name}'"
+       "echo /var/lib/registry/mcm_scripts/mcm_cleanup.sh ${var.secret_name} ${var.icp_user} ${var.icp_user_password} ${var.boot_ipv4_address} ${var.cluster_name}",
+      "bash -c '/var/lib/registry/mcm_scripts/mcm_cleanup.sh ${var.secret_name} ${var.icp_user} ${var.icp_user_password} ${var.boot_ipv4_address} ${var.cluster_name}'"
     ]
   }
 } 
