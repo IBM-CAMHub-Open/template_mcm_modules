@@ -95,8 +95,8 @@ resource "null_resource" "load_mcm_ppa_image" {
       "bash -c '/var/lib/registry/mcm_scripts/mcm_prereq.sh ${var.secret_name} ${var.cluster_ca_name} ${var.cluster_name} ${var.icp_user} ${var.icp_user_password}'",
 
       "chmod 755 /var/lib/registry/mcm_scripts/mcm_install.sh",
-      "echo /var/lib/registry/mcm_scripts/mcm_install.sh  -u ${var.icp_user} -t /var/lib/registry/mcm_scripts/${var.random} -p ${var.icp_user_password} -a ${var.mcm_binary_url} -c ${var.cluster_ca_name} -n ${var.cluster_name}",
-      "bash -c '/var/lib/registry/mcm_scripts/mcm_install.sh -u ${var.icp_user} -t /var/lib/registry/mcm_scripts/${var.random} -p ${var.icp_user_password} -a ${var.mcm_binary_url} -c ${var.cluster_ca_name} -n ${var.cluster_name}'"      
+      "echo /var/lib/registry/mcm_scripts/mcm_install.sh  -u ${var.icp_user} -t /var/lib/registry/mcm_scripts/${var.random} -p ${var.icp_user_password} -a ${var.mcm_binary_url} -c ${var.cluster_ca_name} -n ${var.cluster_name} -r ${var.cluster_docker_registry_server_name}",
+      "bash -c '/var/lib/registry/mcm_scripts/mcm_install.sh -u ${var.icp_user} -t /var/lib/registry/mcm_scripts/${var.random} -p ${var.icp_user_password} -a ${var.mcm_binary_url} -c ${var.cluster_ca_name} -n ${var.cluster_name} -r ${var.cluster_docker_registry_server_name}'"
     ]
   }
   

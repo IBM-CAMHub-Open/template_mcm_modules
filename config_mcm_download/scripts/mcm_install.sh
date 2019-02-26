@@ -5,6 +5,7 @@ set -e
 # Get script parameters
 while test $# -gt 0; do
   [[ $1 =~ ^-c|--cluster ]] && { PARAM_CLUSTER_CA_NAME="${2}"; shift 2; continue; };
+  [[ $1 =~ ^-r|--registry ]] && { PARAM_CLUSTER_REGISTRY_SERVER_NAME="${2}"; shift 2; continue; };
   [[ $1 =~ ^-n|--cluster_name ]] && { PARAM_CLUSTER_NAME="${2}"; shift 2; continue; };  
   [[ $1 =~ ^-t|--path ]] && { MCM_PATH="${2}"; shift 2; continue; };
   [[ $1 =~ ^-u|--user ]] && { PARAM_AUTH_USER="${2}"; shift 2; continue; };
@@ -16,8 +17,8 @@ done
 PARAM_PPA_ARCHIVE_NAME="$(basename ${PARAM_MCM})"
 
 # docker login
-echo "docker login -u ${PARAM_AUTH_USER} -p ****** ${PARAM_CLUSTER_CA_NAME}:8500"
-if sudo docker login -u ${PARAM_AUTH_USER} -p ${PARAM_AUTH_PASSWORD} ${PARAM_CLUSTER_CA_NAME}:8500 ; then
+echo "docker login -u ${PARAM_AUTH_USER} -p ****** ${PARAM_CLUSTER_REGISTRY_SERVER_NAME}:8500"
+if sudo docker login -u ${PARAM_AUTH_USER} -p ${PARAM_AUTH_PASSWORD} ${PARAM_CLUSTER_REGISTRY_SERVER_NAME}:8500 ; then
     echo "docker login success"
 else
    echo "docker login failed"
@@ -34,8 +35,8 @@ else
 fi 
 
 #cloudctl load-ppa-archive
-echo "cloudctl catalog load-ppa-archive -a $MCM_PATH/${PARAM_PPA_ARCHIVE_NAME} --registry ${PARAM_CLUSTER_CA_NAME}:8500/kube-system"
-if sudo cloudctl catalog load-ppa-archive -a $MCM_PATH/${PARAM_PPA_ARCHIVE_NAME} --registry ${PARAM_CLUSTER_CA_NAME}:8500/kube-system ; then
+echo "cloudctl catalog load-ppa-archive -a $MCM_PATH/${PARAM_PPA_ARCHIVE_NAME} --registry ${PARAM_CLUSTER_REGISTRY_SERVER_NAME}:8500/kube-system"
+if sudo cloudctl catalog load-ppa-archive -a $MCM_PATH/${PARAM_PPA_ARCHIVE_NAME} --registry ${PARAM_CLUSTER_REGISTRY_SERVER_NAME}:8500/kube-system ; then
     echo "cloudctl catalog load-ppa-archive success"
 else
    echo "cloudctl catalog load-ppa-archive failed"
