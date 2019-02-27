@@ -101,8 +101,8 @@ resource "null_resource" "load_mcm_ppa_image" {
     inline = [
       "sudo rm -rf /var/lib/registry/mcm_scripts/${var.random}/",   
       "chmod 755 /var/lib/registry/mcm_scripts/mcm_cleanup.sh",
-       "echo /var/lib/registry/mcm_scripts/mcm_cleanup.sh ${var.secret_name} ${var.icp_user} ${var.icp_user_password} ${var.boot_ipv4_address} ${var.cluster_name}",
-      "bash -c '/var/lib/registry/mcm_scripts/mcm_cleanup.sh ${var.secret_name} ${var.icp_user} ${var.icp_user_password} ${var.boot_ipv4_address} ${var.cluster_name}'"
+       "echo /var/lib/registry/mcm_scripts/mcm_cleanup.sh ${var.secret_name} ${var.icp_user} ${var.icp_user_password} ${var.cluster_ca_name} ${var.cluster_name}",
+      "bash -c '/var/lib/registry/mcm_scripts/mcm_cleanup.sh ${var.secret_name} ${var.icp_user} ${var.icp_user_password} ${var.cluster_ca_name} ${var.cluster_name}'"
     ]
   }
 } 
