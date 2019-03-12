@@ -82,7 +82,10 @@ function check_command_and_install() {
         wait_apt_lock
         sudo apt-get install -y $2
       else
+        # add the /usr/local/bin to /etc/sudoers
+        sed -i -e '/secure_path/ s[=.*[&:/usr/local/bin[' /etc/sudoers
         sudo yum install -y $3
+        
       fi
     else # If a function name is provided
       eval $2
