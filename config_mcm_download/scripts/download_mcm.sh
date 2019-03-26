@@ -67,6 +67,13 @@ function wait_apt_lock()
 }
 function check_command_and_install() {
 	command=$1
+  if [[ $PLATFORM == *"ubuntu"* ]]; then
+    printf "\033[32m%s [PLATFORM]\n\033[0m\n" "Detected $PLATFORM platform "
+  else
+    # add the /usr/local/bin to /etc/sudoers
+    printf "\033[32m%s [PLATFORM]\n\033[0m\n" "Detected $PLATFORM platform. Adding /usr/local/bin secure_path to /etc/sudoers "
+    sed -i -e '/secure_path/ s[=.*[&:/usr/local/bin[' /etc/sudoers        
+  fi  
   string="[*] Checking installation of: $command"
   line="......................................................................."
   if command_exists $command; then
@@ -82,10 +89,7 @@ function check_command_and_install() {
         wait_apt_lock
         sudo apt-get install -y $2
       else
-        # add the /usr/local/bin to /etc/sudoers
-        sed -i -e '/secure_path/ s[=.*[&:/usr/local/bin[' /etc/sudoers
         sudo yum install -y $3
-        
       fi
     else # If a function name is provided
       eval $2
