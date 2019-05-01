@@ -82,4 +82,5 @@ fi
 rm -rf $MCM_PATH
 
 ## wait for the repo sync to finish. TODO: helm API?
-sleep 30
+echo "Sleeping for 2 minutes while waiting for the catalog sync to finish"
+sleep 120
