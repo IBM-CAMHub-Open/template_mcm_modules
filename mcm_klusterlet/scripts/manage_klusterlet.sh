@@ -191,7 +191,7 @@ function verifyEksInformation() {
 }
 
 function setEksKlusterletConfiguration() {
-    echo "Parsing GKE identification details from cluster data..."
+    echo "Parsing EKS identification details from cluster data..."
     cluster="${CLUSTER_NAME}"
     namespace=$(echo "mcm-${CLUSTER_NAME}" | tr '[:upper:]' '[:lower:]')
 
