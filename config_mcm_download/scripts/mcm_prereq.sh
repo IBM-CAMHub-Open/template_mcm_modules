@@ -21,12 +21,14 @@ systemArch=$(arch)
 if [ "${systemArch}" == "x86_64" ]; then systemArch='amd64'; fi
 # Set arch in dev.yaml
 if [ "${systemArch}" == 'ppc64le' ]; then
-	if $(grep -q "^arch:*" dev.yaml); then
-		echo "arch line found"
-		sed -i -e "/arch:*/c\arch:\ ${systemArch}" dev.yaml
-	else
-		echo 'arch line not found'
-		sed -i -e '$a'"arch:\ ${systemArch}" dev.yaml
+	if [ -f dev.yaml ]; then
+		if $(grep -q "^arch:*" dev.yaml); then
+			echo "arch line found"
+			sed -i -e "/arch:*/c\arch:\ ${systemArch}" dev.yaml
+		else
+			echo 'arch line not found'
+			sed -i -e '$a'"arch:\ ${systemArch}" dev.yaml
+		fi
 	fi
 fi
 
