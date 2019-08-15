@@ -9,7 +9,6 @@
 set -e
 
 #Default values
-PARAM_HUB_CONSOLE_PORT=8443
 PARAM_CLUSTER_REG_PORT=8500
 PARAM_CLUSTER_INCEPTION_IMAGE=ibmcom/icp-inception-amd64:3.2.0-ee
 MANCLUSTERCLOUD=IBM
@@ -29,12 +28,12 @@ while test $# -gt 0; do
   [[ $1 =~ ^-cm|--cluster ]] && { PARAM_CLUSTER="${2}"; shift 2; continue; }; 	
   [[ $1 =~ ^-pa|--path ]] && { ICPDIR="${2}"; shift 2; continue; };
   [[ $1 =~ ^-hs|--hub ]] && { HUB="${2}"; shift 2; continue; };
-  [[ $1 =~ ^-ht|--hubport ]] && { PARAM_HUB_CONSOLE_PORT="${2}"; shift 2; continue; };
   [[ $1 =~ ^-hu|--hubuser ]] && { HUBUSER="${2}"; shift 2; continue; };
   [[ $1 =~ ^-hp|--hubpassword ]] && { HUBPASS="${2}"; shift 2; continue; };
   [[ $1 =~ ^-mch|--manclusterhub ]] && { MANCLUSTERHUB="${2}"; shift 2; continue; };
   [[ $1 =~ ^-u|--user ]] && { ADMIN_USER="${2}"; shift 2; continue; };
   [[ $1 =~ ^-pw|--password ]] && { ADMIN_PASS="${2}"; shift 2; continue; };
+  [[ $1 =~ ^-s|--icpsrvrurl ]] && { PARAM_ICP_SRVR_URL="${2}"; shift 2; continue; };  	
   [[ $1 =~ ^-v|--icpimage ]] && { PARAM_CLUSTER_INCEPTION_IMAGE="${2}"; shift 2; continue; };  	
   #[[ $1 =~ ^-mcc|--manclustercloud ]] && { MANCLUSTERCLOUD="${2}"; shift 2; continue; };
   #[[ $1 =~ ^-mcv|--manclustervendor ]] && { MANCLUSTERVEN="${2}"; shift 2; continue; };
@@ -42,19 +41,20 @@ while test $# -gt 0; do
   #[[ $1 =~ ^-mcr|--manclusterreg ]] && { MANCLUSTERREG="${2}"; shift 2; continue; };
   #[[ $1 =~ ^-mcd|--manclusterdctr ]] && { MANCLUSTERDC="${2}"; shift 2; continue; };
   #[[ $1 =~ ^-mco|--manclusterown ]] && { MANCLUSTEROWN="${2}"; shift 2; continue; };	
-  [[ $1 =~ ^-kc|--kubeconfig ]] && { CLUSTER_CONFIG="${2}"; shift 2; continue; };
-  [[ $1 =~ ^-kk|--kubecacert ]] && { CLUSTER_CA_CERT="${2}"; shift 2; continue; };  					  	
+  #[[ $1 =~ ^-kc|--kubeconfig ]] && { CLUSTER_CONFIG="${2}"; shift 2; continue; };
+  #[[ $1 =~ ^-kk|--kubecacert ]] && { CLUSTER_CA_CERT="${2}"; shift 2; continue; };  					  	
   break;
 done
 
-if [ -z "$CLUSTER_CONFIG" ]; then
-	echo "Kubernetes config of managed ICP is missing. Provide base64 encoded configuration value and re-deploy. Failed to register ICP to hub cluster."
-	exit 1
-fi
 
-if [ -z "$CLUSTER_CA_CERT" ]; then
-	echo "Kubernetes CA certificate is missing. Will connect without CA certificate."
-fi
+#if [ -z "$CLUSTER_CONFIG" ]; then
+#	echo "Kubernetes config of managed ICP is missing. Provide base64 encoded configuration value and re-deploy. Failed to register ICP to hub cluster."
+#	exit 1
+#fi
+
+#if [ -z "$CLUSTER_CA_CERT" ]; then
+#	echo "Kubernetes CA certificate is missing. Will connect without CA certificate."
+#fi
 
 if [ -z "$PARAM_CLUSTER" ]; then
 	echo "ICP cluster name on managed ICP is missing. Failed to register ICP to hub cluster."
@@ -86,6 +86,11 @@ if [ -z "$ADMIN_PASS" ]; then
 	exit 1
 fi
 
+if [ -z "$PARAM_ICP_SRVR_URL" ]; then
+	echo "Managed cluster ICP Server URL is missing. Failed to register ICP to hub cluster."
+	exit 1
+fi
+
 if [ -z "$MANCLUSTERHUB" ]; then
 	echo "Name to identify managed cluster on hub missing. Using ${PARAM_CLUSTER}-managed"
 fi
@@ -102,15 +107,21 @@ if [ -z "$PARAM_CLUSTER_INCEPTION_IMAGE" ]; then
 	echo "ICP Version of managed ICP is missing. Will use default ibmcom/icp-inception-amd64:3.2.0-ee."
 fi			
 
-if [ -z "$PARAM_HUB_CONSOLE_PORT" ]; then
-	echo "Console port of hub is missing. Will use default port 8443."
-fi
-
 if [ -z "$PARAM_CLUSTER_REG_CA_CERT" ]; then
 	echo "Private docker registry CA certificate is missing. Import command may fail to bootstrap."
 else
-	sudo mkdir -p /etc/docker/certs.d/${PARAM_CLUSTER_REG_SERVER}:${PARAM_CLUSTER_REG_PORT}
-	echo "${PARAM_CLUSTER_REG_CA_CERT}" | base64 -d | sudo tee -a /etc/docker/certs.d/${PARAM_CLUSTER_REG_SERVER}:${PARAM_CLUSTER_REG_PORT}/ca.crt
+	if [ -d "/etc/docker/certs.d/${PARAM_CLUSTER_REG_SERVER}:${PARAM_CLUSTER_REG_PORT}" ]; then
+		echo "Directory /etc/docker/certs.d/${PARAM_CLUSTER_REG_SERVER}:${PARAM_CLUSTER_REG_PORT} found"
+	else
+		echo "Directory /etc/docker/certs.d/${PARAM_CLUSTER_REG_SERVER}:${PARAM_CLUSTER_REG_PORT} not found, create a new one"
+		sudo mkdir -p /etc/docker/certs.d/${PARAM_CLUSTER_REG_SERVER}:${PARAM_CLUSTER_REG_PORT}
+    fi
+    if [ -f "/etc/docker/certs.d/${PARAM_CLUSTER_REG_SERVER}:${PARAM_CLUSTER_REG_PORT}/ca.crt" ]; then
+    	echo "File /etc/docker/certs.d/${PARAM_CLUSTER_REG_SERVER}:${PARAM_CLUSTER_REG_PORT}/ca.crt found."
+    else
+		echo "File /etc/docker/certs.d/${PARAM_CLUSTER_REG_SERVER}:${PARAM_CLUSTER_REG_PORT}/ca.crt not found, create a new one."
+		echo "${PARAM_CLUSTER_REG_CA_CERT}" | base64 -d | sudo tee /etc/docker/certs.d/${PARAM_CLUSTER_REG_SERVER}:${PARAM_CLUSTER_REG_PORT}/ca.crt
+	fi
 fi
 
 if [ -z "$PARAM_CLUSTER_REG_IP" ]; then
@@ -122,18 +133,21 @@ fi
 
 
 
-echo "Generate kube config for managed cluster from kubeconfig data object"
+#echo "Generate kube config for managed cluster from kubeconfig data object"
 KUBECONFIG_FILE=/var/lib/registry/mcm_scripts/managedconfig
-echo ${CLUSTER_CONFIG} | base64 -d > ${KUBECONFIG_FILE}
+#echo ${CLUSTER_CONFIG} | base64 -d > ${KUBECONFIG_FILE}
 export KUBECONFIG=${KUBECONFIG_FILE}
-if [[ ! -z "$CLUSTER_CA_CERT" ]]; then
-	CERT_LOC=$(sudo grep "certificate-authority:" ${KUBECONFIG_FILE} | cut -d':' -f2 | cut -d' ' -f2)
-	if [[ ! -z "$CERT_LOC" ]]; then
-		echo "${CLUSTER_CA_CERT}" | base64 -d > ./${CERT_LOC}
-	fi
-fi
+#if [[ ! -z "$CLUSTER_CA_CERT" ]]; then
+#	CERT_LOC=$(sudo grep "certificate-authority:" ${KUBECONFIG_FILE} | cut -d':' -f2 | cut -d' ' -f2)
+#	if [[ ! -z "$CERT_LOC" ]]; then
+#		echo "${CLUSTER_CA_CERT}" | base64 -d > ./${CERT_LOC}
+#	fi
+#fi
 
-echo "Verify if the kubeconfig ${KUBECONFIG} is valid"
+echo "Login to ICP ${PARAM_ICP_SRVR_URL}"
+sudo KUBECONFIG=${KUBECONFIG_FILE} /usr/local/bin/cloudctl login -a ${PARAM_ICP_SRVR_URL} -u ${ADMIN_USER} -p ${ADMIN_PASS} --skip-ssl-validation -n default
+
+echo "Verify if the ICP kubeconfig is valid"
 set +e
 err=$(mktemp)
 sudo KUBECONFIG=${KUBECONFIG_FILE} kubectl get nodes 2>$err
@@ -166,11 +180,11 @@ CLUSTER_CONTEXT=${PARAM_CLUSTER}-context
 #fi	
 unset KUBECONFIG
 
-echo "Login to hub ${HUB}:${PARAM_HUB_CONSOLE_PORT}"
-sudo /usr/local/bin/cloudctl login -a https://${HUB}:${PARAM_HUB_CONSOLE_PORT} -u ${HUBUSER} -p ${HUBPASS} --skip-ssl-validation -n kube-system
+echo "Login to hub ${HUB}"
+sudo /usr/local/bin/cloudctl login -a ${HUB} -u ${HUBUSER} -p ${HUBPASS} --skip-ssl-validation -n kube-system
 	
 echo "Get cluster template from hub"
-sudo /usr/local/bin/cloudctl mc cluster template ${MANCLUSTERHUB} -n ${MANNSHUB} | tee -a /var/lib/registry/mcm_scripts/cluster-import.yaml
+sudo /usr/local/bin/cloudctl mc cluster template ${MANCLUSTERHUB} -n ${MANNSHUB} | tee /var/lib/registry/mcm_scripts/cluster-import.yaml
 
 sed -i -e "s/default_admin_user:.*/default_admin_user: ${ADMIN_USER}/" /var/lib/registry/mcm_scripts/cluster-import.yaml
 #sed -i -e 's/    environment:.*/    environment: "'"${MANCLUSTERENV}"'"/' /var/lib/registry/mcm_scripts/cluster-import.yaml
