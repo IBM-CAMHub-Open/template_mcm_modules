@@ -217,10 +217,14 @@ sudo kubectl patch configmap -n ${MANNSHUB} ${MANCLUSTERHUB}-bootstrap-config --
 if [ -z "$ICPDIR" ]; then
 	echo "Managed ICP Install Directory is empty. config.yaml file not updated. Manually update config.yaml using output variable Import confguration."
 else
-	echo "Append import configuration of config file"
-	cp ${ICPDIR}/config.yaml ${ICPDIR}/config.yaml.orig
-	sed -i -e "s/multicluster-endpoint: disabled/multicluster-endpoint: enabled/" ${ICPDIR}/config.yaml
-	cat /var/lib/registry/mcm_scripts/cluster-import.yaml >> ${ICPDIR}/config.yaml
+	if [ -f "${ICPDIR}/config.yaml" ]; then
+		echo "Append import configuration of config file"
+		cp ${ICPDIR}/config.yaml ${ICPDIR}/config.yaml.orig
+		sed -i -e "s/multicluster-endpoint: disabled/multicluster-endpoint: enabled/" ${ICPDIR}/config.yaml
+		cat /var/lib/registry/mcm_scripts/cluster-import.yaml >> ${ICPDIR}/config.yaml
+	else
+		echo "Managed ICP configuration file {ICPDIR}/config.yaml not found. Verify if you are running this script on ICP boot node."
+	fi
 fi
 
 echo "Logout from hub"

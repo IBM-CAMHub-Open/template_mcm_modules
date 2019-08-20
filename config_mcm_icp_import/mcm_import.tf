@@ -86,7 +86,7 @@ resource "camc_scriptpackage" "get_cluster_import_yaml" {
   	remote_host = "${var.import_launch_node_ip}"
   	remote_user = "${var.vm_os_user}"
   	remote_password = "${var.vm_os_password}"
-  	remote_key = "${length(var.vm_os_private_key) > 0 ? base64decode(var.vm_os_private_key) : ""}"
+  	remote_key = "${length(var.vm_os_private_key) > 0 ? var.vm_os_private_key : ""}"
     bastion_host        = "${var.bastion_host}"
     bastion_user        = "${var.bastion_user}"
     bastion_private_key = "${length(var.bastion_private_key) > 0 ? base64decode(var.bastion_private_key) : var.bastion_private_key}"
