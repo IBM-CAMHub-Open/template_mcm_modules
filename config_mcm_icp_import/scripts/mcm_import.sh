@@ -214,7 +214,7 @@ else
 		sed -i -e "s/multicluster-endpoint: disabled/multicluster-endpoint: enabled/" ${ICPDIR}/config.yaml
 		cat /var/lib/registry/mcm_scripts/cluster-import.yaml >> ${ICPDIR}/config.yaml
 	else
-		echo "Managed ICP configuration file {ICPDIR}/config.yaml not found. Verify if you are running this script on ICP boot node."
+		echo "Managed ICP configuration file ${ICPDIR}/config.yaml not found. Verify if you are running this script on ICP boot node."
 	fi
 fi
 
