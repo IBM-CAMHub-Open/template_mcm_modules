@@ -106,22 +106,13 @@ sudo KUBECONFIG=${KUBECONFIG_FILE} oc login ${OCP_SERVER_URL} -u ${ADMIN_USER} -
 
 echo "Verify if the OCP kubeconfig is valid"
 set +e
-err=$(mktemp)
-sudo KUBECONFIG=${KUBECONFIG_FILE} kubectl get nodes 2>$err
+sudo KUBECONFIG=${KUBECONFIG_FILE} kubectl get nodes
 RESULT=$(echo $?)
-kubeerr=$(< $err)
-rm $err
 if [ $RESULT -eq 1 ]; then
-	echo "Unable to connect to OCP cluster. Kubeconfig validation failed: ${kubeerr} . Verify if the value for Managed Cluster Kubernetes Configuration is valid."
+	echo "Unable to connect to OCP cluster. Kubeconfig validation failed. Verify if the value for Managed Cluster Kubernetes Configuration is valid."
 	unset KUBECONFIG
 	exit 1	
 fi
-if [[ ! -z $kubeerr ]]; then
-	echo "Unable to connect to OCP cluster. Kubeconfig validation failed: ${kubeerr} . Verify if the value for Managed Cluster Kubernetes Configuration is valid."
-	unset KUBECONFIG
-	exit 1	
-fi
-
 set -e
  
 #Namespace of managed cluster on hub
