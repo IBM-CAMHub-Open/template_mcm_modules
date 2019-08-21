@@ -183,36 +183,49 @@ sed -i -e "s/default_admin_user:.*/default_admin_user: ${ADMIN_USER}/" /var/lib/
 #sed -i -e 's/    datacenter:.*/    datacenter: "'"${MANCLUSTERDC}"'"/' /var/lib/registry/mcm_scripts/cluster-import.yaml
 #sed -i -e 's/    owner:.*/    owner: "'"${MANCLUSTEROWN}"'"/' /var/lib/registry/mcm_scripts/cluster-import.yaml
 
-if [ -z "$PARAM_CLUSTER_REG_SERVER" ]; then
-	echo "Managed ICP Private Docker Registry Server Name is empty. Private registry disabled in import configuration."
-else
+#Check if image is ee or ce
+tag=$(echo ${PARAM_CLUSTER_INCEPTION_IMAGE} | cut -d":" -f2)
+CE=true 
+if [[ $tag == *-ee ]]
+then
+	CE=false
+fi
+
+if [ -z "$PARAM_CLUSTER_REG_SERVER" ] || [[ "$CE" == "true" ]]; then
+	echo "Managed ICP Private Docker Registry Server Name is empty or this is a CE image. Private registry disabled in import configuration."
+else	
 	echo "Customize cluster template for private repository"
 	echo "image_repo: ${PARAM_CLUSTER_REG_SERVER}:${PARAM_CLUSTER_REG_PORT}/ibmcom" | tee -a /var/lib/registry/mcm_scripts/cluster-import.yaml
 	echo "private_registry_enabled: true" | tee -a /var/lib/registry/mcm_scripts/cluster-import.yaml
 	echo "docker_username: ${ADMIN_USER}" | tee -a /var/lib/registry/mcm_scripts/cluster-import.yaml
 	echo "docker_password: ${ADMIN_PASS}" | tee -a /var/lib/registry/mcm_scripts/cluster-import.yaml
-	sed -i -e "s|inception_image:.*|inception_image: ${PARAM_CLUSTER_REG_SERVER}:${PARAM_CLUSTER_REG_PORT}/${PARAM_CLUSTER_INCEPTION_IMAGE}|" /var/lib/registry/mcm_scripts/cluster-import.yaml		
+	sed -i -e "s|inception_image:.*|inception_image: ${PARAM_CLUSTER_REG_SERVER}:${PARAM_CLUSTER_REG_PORT}/${PARAM_CLUSTER_INCEPTION_IMAGE}|" /var/lib/registry/mcm_scripts/cluster-import.yaml	
 fi
 
 echo "Import template to hub"
 echo "sudo /usr/local/bin/cloudctl mc cluster import -f cluster-import.yaml --cluster-context ${CLUSTER_CONTEXT} -K ${KUBECONFIG_FILE}"
-sudo /usr/local/bin/cloudctl mc cluster import -f /var/lib/registry/mcm_scripts/cluster-import.yaml --cluster-context ${CLUSTER_CONTEXT} -K ${KUBECONFIG_FILE} | tee /var/lib/registry/mcm_scripts/cluster-import.log
+sudo /usr/local/bin/cloudctl mc cluster import -f /var/lib/registry/mcm_scripts/cluster-import.yaml --cluster-context ${CLUSTER_CONTEXT} -K ${KUBECONFIG_FILE}
 
-echo "Clean up hub cluster configmap"
-echo "sudo kubectl get configmap -n ${MANNSHUB} ${MANCLUSTERHUB}-bootstrap-config -o yaml"
-sudo kubectl get configmap -n ${MANNSHUB} ${MANCLUSTERHUB}-bootstrap-config -o yaml | tee /var/lib/registry/mcm_scripts/patch.yaml
-sed -i -e "s/docker_password:.*/#docker_password:/" /var/lib/registry/mcm_scripts/patch.yaml
-sed -i -e "s/docker_username:.*/#docker_username:/" /var/lib/registry/mcm_scripts/patch.yaml
-echo "sudo kubectl patch configmap -n ${MANNSHUB} ${MANCLUSTERHUB}-bootstrap-config --type merge --patch "
-sudo kubectl patch configmap -n ${MANNSHUB} ${MANCLUSTERHUB}-bootstrap-config --type merge --patch "$(cat /var/lib/registry/mcm_scripts/patch.yaml)"
+if [ -z "$PARAM_CLUSTER_REG_SERVER" ] || [[ "$CE" == "true" ]]; then
+	echo "Public registry, no clean up required"
+else
+	echo "Clean up hub cluster configmap"
+	echo "sudo kubectl get configmap -n ${MANNSHUB} ${MANCLUSTERHUB}-bootstrap-config -o yaml"
+	sudo kubectl get configmap -n ${MANNSHUB} ${MANCLUSTERHUB}-bootstrap-config -o yaml | tee /var/lib/registry/mcm_scripts/patch.yaml
+	sed -i -e "s/docker_password:.*/#docker_password:/" /var/lib/registry/mcm_scripts/patch.yaml
+	sed -i -e "s/docker_username:.*/#docker_username:/" /var/lib/registry/mcm_scripts/patch.yaml
+	echo "sudo kubectl patch configmap -n ${MANNSHUB} ${MANCLUSTERHUB}-bootstrap-config --type merge --patch "
+	sudo kubectl patch configmap -n ${MANNSHUB} ${MANCLUSTERHUB}-bootstrap-config --type merge --patch "$(cat /var/lib/registry/mcm_scripts/patch.yaml)"
+fi
+	
 if [ -z "$ICPDIR" ]; then
 	echo "Managed ICP Install Directory is empty. config.yaml file not updated. Manually update config.yaml using output variable Import confguration."
 else
 	if [ -f "${ICPDIR}/config.yaml" ]; then
 		echo "Append import configuration of config file"
-		cp ${ICPDIR}/config.yaml ${ICPDIR}/config.yaml.orig
-		sed -i -e "s/multicluster-endpoint: disabled/multicluster-endpoint: enabled/" ${ICPDIR}/config.yaml
-		cat /var/lib/registry/mcm_scripts/cluster-import.yaml >> ${ICPDIR}/config.yaml
+		sudo cp ${ICPDIR}/config.yaml ${ICPDIR}/config.yaml.orig
+		sudo sed -i -e "s/multicluster-endpoint: disabled/multicluster-endpoint: enabled/" ${ICPDIR}/config.yaml
+		sudo cat /var/lib/registry/mcm_scripts/cluster-import.yaml >> ${ICPDIR}/config.yaml
 	else
 		echo "Managed ICP configuration file ${ICPDIR}/config.yaml not found. Verify if you are running this script on ICP boot node."
 	fi
