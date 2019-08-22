@@ -225,7 +225,7 @@ else
 		echo "Append import configuration of config file"
 		sudo cp ${ICPDIR}/config.yaml ${ICPDIR}/config.yaml.orig
 		sudo sed -i -e "s/multicluster-endpoint: disabled/multicluster-endpoint: enabled/" ${ICPDIR}/config.yaml
-		sudo cat /var/lib/registry/mcm_scripts/cluster-import.yaml >> ${ICPDIR}/config.yaml
+		sudo tee -a ${ICPDIR}/config.yaml < /var/lib/registry/mcm_scripts/cluster-import.yaml
 	else
 		echo "Managed ICP configuration file ${ICPDIR}/config.yaml not found. Verify if you are running this script on ICP boot node."
 	fi
