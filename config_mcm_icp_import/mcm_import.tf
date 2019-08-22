@@ -89,7 +89,7 @@ resource "camc_scriptpackage" "get_cluster_import_yaml" {
   	remote_key = "${length(var.vm_os_private_key) > 0 ? var.vm_os_private_key : ""}"
     bastion_host        = "${var.bastion_host}"
     bastion_user        = "${var.bastion_user}"
-    bastion_private_key = "${length(var.bastion_private_key) > 0 ? base64decode(var.bastion_private_key) : var.bastion_private_key}"
+    bastion_private_key = "${var.bastion_private_key}"
     bastion_port        = "${var.bastion_port}"
     bastion_password    = "${var.bastion_password}"            	
 }
