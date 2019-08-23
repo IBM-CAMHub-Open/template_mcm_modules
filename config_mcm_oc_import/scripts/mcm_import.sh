@@ -136,7 +136,7 @@ sed -i -e "s/default_admin_user:.*/default_admin_user: ${ADMIN_USER}/" /var/lib/
 #sed -i -e 's/    owner:.*/    owner: "'"${MANCLUSTEROWN}"'"/' /var/lib/registry/mcm_scripts/cluster-import.yaml
 
 echo "Import template to hub"
-sudo /usr/local/bin/cloudctl mc cluster import -f /var/lib/registry/mcm_scripts/cluster-import.yaml --cluster-context ${CLUSTER_CONTEXT} -K ${KUBECONFIG_FILE} | tee /var/lib/registry/mcm_scripts/cluster-import.log
+sudo /usr/local/bin/cloudctl mc cluster import -f /var/lib/registry/mcm_scripts/cluster-import.yaml --cluster-context ${CLUSTER_CONTEXT} -K ${KUBECONFIG_FILE}
 
 echo "Clean up hub cluster configmap"
 echo "sudo kubectl get configmap -n ${MANNSHUB} ${MANCLUSTERHUB}-bootstrap-config -o yaml"

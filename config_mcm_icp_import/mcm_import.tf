@@ -72,8 +72,8 @@ resource "null_resource" "import_icp" {
     when = "destroy"
     inline = [  
       "chmod 755 /var/lib/registry/mcm_scripts/mcm_cleanup.sh",
-      "echo /var/lib/registry/mcm_scripts/mcm_cleanup.sh -cm ${var.cluster_name} -hs ${var.mcm_controller_server_name} -hu ${var.mcm_controller_admin_user} -mch ${var.man_cluster_on_hub} -u ${var.admin_user} -s ${var.icp_server_url}",
-      "bash -c '/var/lib/registry/mcm_scripts/mcm_cleanup.sh -cm ${var.cluster_name} -hs ${var.mcm_controller_server_name} -hp ${var.mcm_controller_admin_user_password} -hu ${var.mcm_controller_admin_user} -mch ${var.man_cluster_on_hub} -u ${var.admin_user} -pw ${var.admin_user_password} -s ${var.icp_server_url}'"
+      "echo /var/lib/registry/mcm_scripts/mcm_cleanup.sh -cm ${var.cluster_name} -hs ${var.mcm_controller_server_name} -hu ${var.mcm_controller_admin_user} -mch ${var.man_cluster_on_hub} -u ${var.admin_user} -s ${var.icp_server_url} -pa ${var.icp_dir} ",
+      "bash -c '/var/lib/registry/mcm_scripts/mcm_cleanup.sh -cm ${var.cluster_name} -hs ${var.mcm_controller_server_name} -hp ${var.mcm_controller_admin_user_password} -hu ${var.mcm_controller_admin_user} -mch ${var.man_cluster_on_hub} -u ${var.admin_user} -pw ${var.admin_user_password} -s ${var.icp_server_url} -pa ${var.icp_dir}'"
       #"bash -c '/var/lib/registry/mcm_scripts/mcm_cleanup.sh -cm ${var.cluster_name} -hs ${var.mcm_controller_server_name} -hp ${var.mcm_controller_admin_user_password} -hu ${var.mcm_controller_admin_user} -mch ${var.man_cluster_on_hub} -u ${var.admin_user} -pw ${var.admin_user_password} -kc ${var.cluster_config} -kk ${var.cluster_certificate_authority}'"
     ]
   }

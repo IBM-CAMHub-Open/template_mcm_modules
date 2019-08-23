@@ -17,7 +17,8 @@ MANCLUSTERENV=DEV
 MANCLUSTERREG=US
 MANCLUSTERDC=toronto
 MANCLUSTEROWN=marketing
-
+WARN='\033[0;31m'
+REGULAR='\033[0m'
 
 # Get script parameters
 while test $# -gt 0; do
@@ -93,10 +94,6 @@ fi
 
 if [ -z "$MANCLUSTERHUB" ]; then
 	echo "Name to identify managed cluster on hub missing. Using ${PARAM_CLUSTER}-managed"
-fi
-
-if [ -z "$ICPDIR" ]; then
-	echo "ICP install directory of managed ICP is missing. The config.yaml file would not be updated with MCM parameters. You need to manually update the file using the output value."	
 fi
 
 if [ -z "$PARAM_CLUSTER_REG_PORT" ]; then
@@ -219,15 +216,15 @@ else
 fi
 	
 if [ -z "$ICPDIR" ]; then
-	echo "Managed ICP Install Directory is empty. config.yaml file not updated. Manually update config.yaml using output variable Import confguration."
+	echo -e "${WARN}Input for Managed ICP Install Directory is empty, config.yaml file not updated with MCM data. Manually update config.yaml using output variable Import confguration.${REGULAR}"
 else
 	if [ -f "${ICPDIR}/config.yaml" ]; then
 		echo "Append import configuration of config file"
-		sudo cp ${ICPDIR}/config.yaml ${ICPDIR}/config.yaml.orig
+		sudo cp ${ICPDIR}/config.yaml ${ICPDIR}/config.yaml.mcm320disabled
 		sudo sed -i -e "s/multicluster-endpoint: disabled/multicluster-endpoint: enabled/" ${ICPDIR}/config.yaml
 		sudo tee -a ${ICPDIR}/config.yaml < /var/lib/registry/mcm_scripts/cluster-import.yaml
 	else
-		echo "Managed ICP configuration file ${ICPDIR}/config.yaml not found. Verify if you are running this script on ICP boot node."
+		echo -e "${WARN}Managed ICP configuration file ${ICPDIR}/config.yaml not found. Verify if you are running this script on ICP boot node.${REGULAR}"
 	fi
 fi
 

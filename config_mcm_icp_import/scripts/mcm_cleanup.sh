@@ -10,6 +10,8 @@
 set -e
 
 KUBECONFIG_FILE=/var/lib/registry/mcm_scripts/managedconfig
+WARN='\033[0;31m'
+REGULAR='\033[0m'
 
 # Get script parameters
 while test $# -gt 0; do
@@ -21,6 +23,7 @@ while test $# -gt 0; do
   [[ $1 =~ ^-u|--user ]] && { ADMIN_USER="${2}"; shift 2; continue; };
   [[ $1 =~ ^-pw|--password ]] && { ADMIN_PASS="${2}"; shift 2; continue; };
   [[ $1 =~ ^-s|--icpsrvrurl ]] && { PARAM_ICP_SRVR_URL="${2}"; shift 2; continue; };  	
+  [[ $1 =~ ^-pa|--path ]] && { ICPDIR="${2}"; shift 2; continue; };  	
   #[[ $1 =~ ^-kc|--kubeconfig ]] && { CLUSTER_CONFIG="${2}"; shift 2; continue; };
   #[[ $1 =~ ^-kk|--kubecacert ]] && { CLUSTER_CA_CERT="${2}"; shift 2; continue; };  	
   break;
@@ -122,5 +125,17 @@ sudo kubectl delete cluster ${MANCLUSTERHUB} -n ${MANNSHUB}
 #sudo kubectl delete configmap ${MANCLUSTERHUB}-bootstrap-config -n ${MANNSHUB}
 sudo /usr/local/bin/cloudctl logout
 sudo kubectl config unset current-context
+if [ -z "$ICPDIR" ]; then
+	echo -e "${WARN}Input for ICP install directory of managed ICP is missing. The config.yaml file would not be reverted to original state. You need to manually update the file.${REGULAR}"
+else
+	if [ -f "${ICPDIR}/config.yaml.mcm320disabled" ]; then
+		echo "Revert to original config.yaml file."
+		sudo cp ${ICPDIR}/config.yaml ${ICPDIR}/config.yaml.mcm320enabled
+		sudo cp ${ICPDIR}/config.yaml.mcm320disabled ${ICPDIR}/config.yaml
+	else
+		echo -e "${WARN}Original ICP configuration backup file ${ICPDIR}/config.yaml.mcm320disabled not found. The config.yaml file would not be reverted to original state. You need to manually update the file.${REGULAR}"
+	fi
+fi	
+	
 
 
