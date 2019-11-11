@@ -225,7 +225,7 @@ function setEksImportDetails() {
     containerRuntime="docker"
 
     echo "Parsing EKS identification details from kubeconfig data..."
-    CLUSTER_ADMIN_USER=$(sed -n '/users:/,//p' ${KUBECONFIG_FILE} | grep "\- name: .*" | head -n 1 | awk '{$1=$1};1' | cut -f3 -d' ')
+    CLUSTER_ADMIN_USER=$(sed -n '/users:/,//p' ${KUBECONFIG_FILE} | grep "\- name: .*" | head -n 1 | awk '{$1=$1};1' | cut -f3 -d' ' | cut -f2 -d'/')
     CLUSTER_CONTEXT=$(cat "${KUBECONFIG_FILE}" | grep "current-context: .*" | awk '{$1=$1};1' | cut -f2 -d' ')
 
     # Generate the import template file
