@@ -30,6 +30,7 @@
 ##   -ip|--icppassword <ICP_ADMIN_PASSWORD>         Password used to authenticate with the ICP server
 ## For OCP:
 ##   -os|--ocpserverurl <OCP_URL>                   URL (including port) of the OCP server
+##   -oa|--ocpoauthurl <OCP_OAUTH_URL>              URL (including port) of the OCP OAUTH server
 ##   -ou|--ocpuser <OCP_ADMIN_USER>                 Name of the OCP administration user
 ##   -op|--ocppassword <OCP_ADMIN_PASSWORD>         Password used to authenticate with the OCP server
 ## For AKS, EKS, GKE, IKS:
@@ -332,6 +333,10 @@ function verifyOcpInformation() {
         echo "${WARN_ON}OCP API URL is not available${WARN_OFF}"
         exit 1
     fi
+    if [ -z "$(echo "${OCP_OAUTH_URL}" | tr -d '[:space:]')" ]; then
+        echo "${WARN_ON}OCP OAUTH URL is not available; Using OCP API URL${WARN_OFF}"
+        OCP_OAUTH_URL=${OCP_URL}
+    fi
     if [ -z "$(echo "${OCP_ADMIN_USER}" | tr -d '[:space:]')" ]; then
         echo "${WARN_ON}OCP admin username is not available${WARN_OFF}"
         exit 1
@@ -344,8 +349,14 @@ function verifyOcpInformation() {
 
 ## Authenticate with OCP server in order to obtain cluster-specific information
 function ocpClusterLogin() {
-    echo "Authenticating with OCP server to obtain token for use with kubectl..."
-    ocpToken=$(curl -u ${OCP_ADMIN_USER}:${OCP_ADMIN_PASSWORD} -kI "${OCP_URL}/oauth/authorize?client_id=openshift-challenging-client&response_type=token" | grep -oP "access_token=\K[^&]*")
+    set +e
+    echo "Authenticating with OCP OAUTH server to obtain token for use with kubectl..."
+    ocpToken=$(curl -u ${OCP_ADMIN_USER}:${OCP_ADMIN_PASSWORD} -kI "${OCP_OAUTH_URL}/oauth/authorize?client_id=openshift-challenging-client&response_type=token" | grep -oP "access_token=\K[^&]*")
+    if [ $? -ne 0 ]; then
+        echo "${WARN_ON}Unable to obtain access token for OCP cluster ${CLUSTER_NAME}"
+        exit 1
+    fi
+    set -e
     
     ## Generate KUBECONFIG file to be used when accessing the target cluster
     ${WORK_DIR}/bin/kubectl config set-cluster     ${CLUSTER_NAME}   --insecure-skip-tls-verify=true --server=${OCP_URL}
@@ -395,6 +406,7 @@ while test ${#} -gt 0; do
     [[ $1 =~ ^-ip|--icppassword ]]      && { ICP_ADMIN_PASSWORD="${2}";          shift 2; continue; };
 
     [[ $1 =~ ^-os|--ocpserverurl ]]     && { OCP_URL="${2}";                     shift 2; continue; };
+    [[ $1 =~ ^-oa|--ocpoauthurl ]]      && { OCP_OAUTH_URL="${2}";               shift 2; continue; };
     [[ $1 =~ ^-ou|--ocpuser ]]          && { OCP_ADMIN_USER="${2}";              shift 2; continue; };
     [[ $1 =~ ^-op|--ocppassword ]]      && { OCP_ADMIN_PASSWORD="${2}";          shift 2; continue; };
     

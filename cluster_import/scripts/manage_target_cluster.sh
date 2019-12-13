@@ -214,8 +214,19 @@ function prepareClusterImport() {
     echo "==============================================="
     IMPORT_STATUS="configured"
 
-    echo "Creating the resource for cluster ${CLUSTER_NAME}..."
-    hub-cloudctl mc cluster create -f ${CONFIG_FILE}
+    ## Create the cluster resource, if it does not already exist
+    clusterCount=$(kubectl get clusters -n ${nameSpace} | grep ${CLUSTER_NAME} | wc -l)
+    clusterPending=$(kubectl get clusters -n ${nameSpace} | grep ${CLUSTER_NAME} | grep "Pending" | wc -l)
+    if [ $clusterCount -eq 0 ]; then
+        echo "Creating the resource for cluster ${CLUSTER_NAME}..."
+        hub-cloudctl mc cluster create -f ${CONFIG_FILE}
+    elif [ $clusterPending -eq 1 ]; then
+        echo "Cluster ${CLUSTER_NAME} has previously been created; Import is pending..."
+    else
+        echo "Cluster ${CLUSTER_NAME} already exists in hub with an unexpected state; Exiting"
+        kubectl get clusters -n ${nameSpace}
+        exit 1
+    fi
     IMPORT_STATUS="created"
 
     echo "Generating import file for target cluster ${CLUSTER_NAME}..."

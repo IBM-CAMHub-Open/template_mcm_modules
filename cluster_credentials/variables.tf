@@ -57,6 +57,11 @@ variable "ocp_url" {
   default = ""
 }
 
+variable "ocp_oauth_url" {
+  description = "URL, including port, for OCP OAUTH server"
+  default = ""
+}
+
 variable "ocp_admin_user" {
   description = "User name for connecting to the OCP server"
   default = ""

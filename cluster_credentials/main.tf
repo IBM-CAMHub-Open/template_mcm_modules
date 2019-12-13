@@ -43,6 +43,7 @@ resource "null_resource" "generate-credentials" {
       ICP_ADMIN_PASSWORD          = "${var.icp_admin_password}"
       ## OCP
       OCP_URL                     = "${var.ocp_url}"
+      OCP_OAUTH_URL               = "${var.ocp_oauth_url}"
       OCP_ADMIN_USER              = "${var.ocp_admin_user}"
       OCP_ADMIN_PASSWORD          = "${var.ocp_admin_password}"
     }
