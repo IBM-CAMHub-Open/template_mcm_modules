@@ -5,7 +5,7 @@ This code is released under the Apache 2.0 License.
 ## Overview
 This terraform module generates the credentials (user name and token) used to access a Kubernetes cluster.
 Supported Kubernetes cluster environments include:
-* IBM Cloud Private (ICP)
+* RedHat OpenShift Kubernetes Services on IBM Cloud (ROKS)
 * IBM Cloud Private with Openshift (OCP)
 * IBM Cloud Kubernetes Service (IKS)
 * Microsoft Azure Kubernetes Service (AKS)
@@ -21,16 +21,9 @@ The terraform module accepts cluster-specific information (e.g. kubeconfig file,
 
 | Parameter Name                  | Parameter Description | Required | Allowed Values |
 | :---                            | :--- | :--- | :--- |
-| cluster_type                    | Indicates the type of environment supporting the target Kubernetes cluster | true | icp, ocp, iks, aks, gke, eks |
+| cluster_type                    | Indicates the type of environment supporting the target Kubernetes cluster | true | roks, ocp, iks, aks, gke, eks |
 | cluster_name                    | Name of the target cluster to be imported into the MCM hub cluster | true | |
 | work_directory                  | Directory where work files can be generated | | |
-
-For ICP clusters:
-| Parameter Name                  | Parameter Description | Required | Allowed Values |
-| :---                            | :--- | :--- | :--- |
-| icp\_url                        | URL, including port, for the ICP server | true | |
-| icp\_admin\_user                | User name for connecting to the ICP server | true | |
-| icp\_admin\_password            | Password for connecting to the ICP server | true | |
 
 For OCP clusters:
 | Parameter Name                  | Parameter Description | Required | Allowed Values |
@@ -63,3 +56,8 @@ For IBM Cloud Kubernetes Service (IKS) clusters:
 | :---                            | :--- | :--- | :--- |
 | cluster_config                  | kubectl configuration text, Base64 encoded | true | |
 | cluster\_certificate\_authority | Certificate for authenticating with cluster, Base64 encoded | true | |
+
+For RedHat OpenShift Kubernetes Services on IBM Cloud (ROKS):
+| Parameter Name                  | Parameter Description | Required | Allowed Values |
+| :---                            | :--- | :--- | :--- |
+| cluster_config                  | kubectl configuration text, Base64 encoded | true | |

@@ -4,15 +4,15 @@ variable "dependsOn" {
 }
 
 variable "mcm_url" {
-  description = "URL, including port, for the MCM hub cluster"
+  description = "URL, including port, for the IBM CP4MCM hub cluster"
 }
 
 variable "mcm_admin_user" {
-  description = "User name for connecting to the MCM server"
+  description = "User name for connecting to the IBM CP4MCM server"
 }
 
 variable "mcm_admin_password" {
-  description = "Password for connecting to the MCM server"
+  description = "Password for connecting to the IBM CP4MCM server"
 }
 
 variable "cluster_name" {
@@ -56,7 +56,7 @@ variable "image_suffix" {
 }
 
 variable "image_version" {
-  description = "Version (tag) of the MCM image to be pulled"
+  description = "Version (tag) of the IBM CP4MCM image to be pulled"
   default     = ""
 }
 

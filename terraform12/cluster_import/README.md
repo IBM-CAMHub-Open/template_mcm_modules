@@ -3,9 +3,9 @@ Copyright IBM Corp. 2020, 2020
 This code is released under the Apache 2.0 License.
 
 ## Overview
-This terraform template imports an existing Kubernetes cluster into a v3.2.1 MCM hub-cluster.
+This terraform template imports an existing Kubernetes cluster into a v1.3.x or higher IBM CP4MCM hub-cluster.
 Supported Kubernetes cluster environments include:
-* IBM Cloud Private (ICP)
+* RedHat OpenShift Kubernetes Service on IBM Cloud (ROKS)
 * IBM Cloud Private with Openshift (OCP)
 * IBM Cloud Kubernetes Service (IKS)
 * Microsoft Azure Kubernetes Service (AKS)
@@ -17,9 +17,9 @@ Supported Kubernetes cluster environments include:
 
 ## Automation summary
 The terraform template performs the following activities to import the specified Kubernetes cluster into the MCM hub-cluster:
-* Authenticates with the ICP server hosting the MCM hub-cluster
+* Authenticates with the ICP server hosting the IBM CP4MCM hub-cluster
 * Uses the given Kubernetes cluster details to configure the import process
-* Runs the import commands supported by the MCM hub-cluster
+* Runs the import commands supported by the IBM CP4MCM hub-cluster
 
 ## Template input parameters
 

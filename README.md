@@ -6,4 +6,4 @@
 Copyright IBM Corp. 2020, 2020
 This code is released under the Apache 2.0 License.
 
-This repository contains the modules used by template_mcm_install to import an existing Kubernetes cluster into a IBM Cloud Pak for Multicloud Manager 2.0.0 hub-cluster.
+This repository contains the modules used by template_mcm_install to import an existing Kubernetes cluster into a IBM Cloud Pak for Multicloud Manager 1.3.x or higher hub-cluster.

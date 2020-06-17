@@ -1,5 +1,5 @@
 variable "cluster_type" {
-  description = "Type of the Kubernetes cluster to be targeted (e.g. icp, ocp, iks, aks, gke, eks)"
+  description = "Type of the Kubernetes cluster to be targeted (e.g. roks, ocp, iks, aks, gke, eks)"
 }
 
 variable "icp_url" {

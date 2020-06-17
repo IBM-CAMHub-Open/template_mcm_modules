@@ -136,6 +136,8 @@ function verifyTargetClusterInformation() {
         ocpClusterLogin
     elif [ "${CLUSTER_TYPE}" == "iks" ]; then
         verifyIksInformation
+	elif [ "${CLUSTER_TYPE}" == "roks" ]; then
+        verifyROKSInformation        
     elif [ "${CLUSTER_TYPE}" == "aks" ]; then
         verifyAksInformation
     elif [ "${CLUSTER_TYPE}" == "eks" ]; then
@@ -212,6 +214,19 @@ function verifyIksInformation() {
     else
         echo "Embedding CA certificate into IKS kubeconfig file..."
         sed -i -e "s|certificate-authority:.*|certificate-authority-data: ${CA_CERTIFICATE}|" ${KUBECONFIG_FILE}
+    fi
+}
+
+## Verify that required details pertaining to the ROKS cluster have been provided
+function verifyROKSInformation() {
+    # Verify cluster-specific information is provided via environment variables
+    KUBECONFIG_TEXT=$(cat ${CLUSTER_CONFIG_FILE})
+    if [ -z "$(echo "${KUBECONFIG_TEXT}" | tr -d '[:space:]')" ]; then
+        echo "${WARN_ON}IKS cluster identification details are not available${WARN_OFF}"
+        exit 1
+    else
+        echo "Creating kubeconfig file..."
+        echo "${KUBECONFIG_TEXT}" > ${KUBECONFIG_FILE}
     fi
 }
 

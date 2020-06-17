@@ -27,7 +27,7 @@ resource "null_resource" "generate-credentials" {
   provisioner "local-exec" {
     command = "chmod 755 ${path.module}/scripts/get_cluster_credentials.sh && ${path.module}/scripts/get_cluster_credentials.sh -cn ${var.cluster_name} -ct ${var.cluster_type} -wd ${var.work_directory} -cf ${local.credentials_file}"
     environment = {
-      ## AKS, EKS, GKE, IKS
+      ## AKS, EKS, GKE, IKS, ROKS
       CLUSTER_CONFIG_FILE = local.kubeconfig_file
       ## IKS
       CLUSTER_CA_CERTIFICATE_FILE = local.certificate_file
