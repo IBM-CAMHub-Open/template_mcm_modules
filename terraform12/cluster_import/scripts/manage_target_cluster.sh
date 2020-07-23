@@ -251,8 +251,26 @@ function initiateClusterImport() {
     echo "Applying import file to target cluster ${CLUSTER_NAME}..."
     export KUBECONFIG=${KUBECONFIG_FILE}
     set +e
-    ${WORK_DIR}/bin/kubectl apply -f ${IMPORT_FILE}
-    if [ $? -ne 0 ]; then
+	iterationMax=5
+    iterationCount=1
+	#
+    #See CP4MCM import cli doc, apply will fail with 
+    #no matches for kind "Endpoint" in version "multicloud.ibm.com/v1beta1"
+    #retry 5 times
+    #    
+    while [ ${iterationCount} -lt ${iterationMax} ]; do     
+    	OUT=`${WORK_DIR}/bin/kubectl apply -f ${IMPORT_FILE} 2>&1`   
+    	RC=$?
+		echo $OUT    	
+    	echo "Import return code is "$RC
+    	if [[ $RC -ne 0 ]]; then            
+        	echo "Import apply failed, retry ..."
+        	iterationCount=$((iterationCount + 1))
+    	else
+    		break
+    	fi
+	done
+    if [[ $RC -ne 0 ]]; then
         exitOnError "Unable to apply the import file to target cluster"
     fi
     IMPORT_STATUS="applied"
