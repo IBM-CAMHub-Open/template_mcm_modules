@@ -266,7 +266,7 @@ function initiateClusterImport() {
     	fi
 	done
     if [[ $RC -ne 0 ]]; then
-        exitOnError "Unable to apply the import file to target cluster"
+    	echo "${WARN_ON}${errMessage}; Unable to apply the import file to target cluster${WARN_OFF}"
     fi
     IMPORT_STATUS="applied"
     unset KUBECONFIG
