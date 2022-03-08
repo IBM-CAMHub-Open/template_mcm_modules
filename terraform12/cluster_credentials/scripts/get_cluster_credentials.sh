@@ -61,8 +61,8 @@ function cleanup() {
 function installIcpCloudctlLocally() {
     if [ ! -x ${WORK_DIR}/bin/icp-cloudctl ]; then
         echo "Installing cloudctl into ${WORK_DIR}..."
-        wget --quiet --no-check-certificate ${ICP_URL}/api/cli/cloudctl-linux-amd64 -P ${WORK_DIR}/bin
-        mv ${WORK_DIR}/bin/cloudctl-linux-amd64 ${WORK_DIR}/bin/icp-cloudctl
+        wget --quiet --no-check-certificate ${ICP_URL}/api/cli/cloudctl-linux-${ARCH} -P ${WORK_DIR}/bin
+        mv ${WORK_DIR}/bin/cloudctl-linux-${ARCH} ${WORK_DIR}/bin/icp-cloudctl
         chmod +x ${WORK_DIR}/bin/icp-cloudctl
     else
         echo "icp-cloudctl has already been installed; No action taken"
@@ -80,7 +80,7 @@ function installKubectlLocally() {
         kversion=$(wget -qO- https://storage.googleapis.com/kubernetes-release/release/stable.txt)
 
         echo "Installing kubectl (version ${kversion}) into ${WORK_DIR}..."
-        wget --quiet https://storage.googleapis.com/kubernetes-release/release/${kversion}/bin/linux/amd64/kubectl -P ${WORK_DIR}/bin
+        wget --quiet https://storage.googleapis.com/kubernetes-release/release/${kversion}/bin/linux/${ARCH}/kubectl -P ${WORK_DIR}/bin
         chmod +x ${WORK_DIR}/bin/kubectl
     else
         echo "kubectl has already been installed; No action taken"
@@ -91,7 +91,7 @@ function installKubectlLocally() {
 function installAwsLocally() {
     if [ ! -x ${WORK_DIR}/bin/aws-iam-authenticator ]; then
         echo "Installing AWS IAM Authenticator into ${WORK_DIR}..."
-        wget --quiet https://amazon-eks.s3-us-west-2.amazonaws.com/1.13.7/2019-06-11/bin/linux/amd64/aws-iam-authenticator -P ${WORK_DIR}/bin
+        wget --quiet https://amazon-eks.s3-us-west-2.amazonaws.com/1.13.7/2019-06-11/bin/linux/${ARCH}/aws-iam-authenticator -P ${WORK_DIR}/bin
         chmod +x ${WORK_DIR}/bin/aws-iam-authenticator
         export AWS_ACCESS_KEY_ID=${ACCESS_KEY_ID}
         export AWS_SECRET_ACCESS_KEY=${SECRET_ACCESS_KEY}
@@ -453,6 +453,17 @@ CREDENTIALS_TOKEN=""
 KUBECONFIG_FILE=${WORK_DIR}/kubeconfig.yaml
 WARN_ON='\033[0;31m'
 WARN_OFF='\033[0m'
+
+ARCH="amd64"
+CURRENTARCH=`arch`
+if [[ "$CURRENTARCH" == "ppc64le" ]]
+then
+    ARCH="ppc64le"
+fi
+if [[ "$CURRENTARCH" == "s390x" ]]
+then
+    ARCH="s390x"
+fi   
 
 ## Run the necessary action(s)
 run

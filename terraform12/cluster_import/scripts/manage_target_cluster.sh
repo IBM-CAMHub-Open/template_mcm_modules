@@ -56,8 +56,8 @@ function exitOnError() {
 function installCloudctlLocally() {
     if [ ! -x ${WORK_DIR}/bin/hub-cloudctl ]; then
         echo "Installing cloudctl into ${WORK_DIR}..."
-        wget --quiet --no-check-certificate ${HUB_URL}/api/cli/cloudctl-linux-amd64 -P ${WORK_DIR}/bin
-        mv ${WORK_DIR}/bin/cloudctl-linux-amd64 ${WORK_DIR}/bin/hub-cloudctl
+        wget --quiet --no-check-certificate ${HUB_URL}/api/cli/cloudctl-linux-${ARCH} -P ${WORK_DIR}/bin
+        mv ${WORK_DIR}/bin/cloudctl-linux-${ARCH} ${WORK_DIR}/bin/hub-cloudctl
         chmod +x ${WORK_DIR}/bin/hub-cloudctl
     else
         echo "cloudctl has already been installed; No action taken"
@@ -75,7 +75,7 @@ function installKubectlLocally() {
         kversion=$(wget -qO- https://storage.googleapis.com/kubernetes-release/release/stable.txt)
 
         echo "Installing kubectl (version ${kversion}) into ${WORK_DIR}..."
-        wget --quiet https://storage.googleapis.com/kubernetes-release/release/${kversion}/bin/linux/amd64/kubectl -P ${WORK_DIR}/bin
+        wget --quiet https://storage.googleapis.com/kubernetes-release/release/${kversion}/bin/linux/${ARCH}/kubectl -P ${WORK_DIR}/bin
         chmod +x ${WORK_DIR}/bin/kubectl
     else
         echo "kubectl has already been installed; No action taken"
@@ -173,8 +173,8 @@ function prepareClusterImport() {
     ## Connect to hub cluster
     hubClusterLogin
     #Download mc plugin
-    wget --quiet --no-check-certificate ${HUB_URL}/rcm/plugins/mc-linux-amd64 -P ${WORK_DIR}/bin
-    hub-cloudctl plugin install -f ${WORK_DIR}/bin/mc-linux-amd64
+    wget --quiet --no-check-certificate ${HUB_URL}/rcm/plugins/mc-linux-${ARCH} -P ${WORK_DIR}/bin
+    hub-cloudctl plugin install -f ${WORK_DIR}/bin/mc-linux-${ARCH}
     echo "Generating configuration file template..."
     nameSpace=${CLUSTER_NAME}
     if [ ! -z "$(echo "${CLUSTER_NAMESPACE}" | tr -d '[:space:]')" ]; then
@@ -424,6 +424,16 @@ while test ${#} -gt 0; do
     [[ $1 =~ ^-dp|--dockerpassword ]]   && { DOCKER_PASSWORD="${2}";             shift 2; continue; };
     break;
 done
+ARCH="amd64"
+CURRENTARCH=`arch`
+if [[ "$CURRENTARCH" == "ppc64le" ]]
+then
+    ARCH="ppc64le"
+fi
+if [[ "$CURRENTARCH" == "s390x" ]]
+then
+    ARCH="s390x"
+fi   
 ACTION="$(echo "${ACTION}" | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]')"
 if [ "${ACTION}" != "import"  -a  "${ACTION}" != "remove" ]; then
     exitOnError "Management action (e.g. import, remove) has not been specified"
