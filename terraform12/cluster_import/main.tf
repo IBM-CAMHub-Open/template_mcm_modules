@@ -32,6 +32,7 @@ resource "null_resource" "import-cluster" {
       IMAGE_VERSION   = var.image_version
       DOCKER_USER     = var.docker_user
       DOCKER_PASSWORD = var.docker_password
+      KUBE_CTL_VERSION = var.kube_ctl_version
     }
   }
 }

@@ -46,6 +46,7 @@ resource "null_resource" "generate-credentials" {
       OCP_OAUTH_URL      = var.ocp_oauth_url
       OCP_ADMIN_USER     = var.ocp_admin_user
       OCP_ADMIN_PASSWORD = var.ocp_admin_password
+      KUBE_CTL_VERSION = var.kube_ctl_version
     }
   }
 }

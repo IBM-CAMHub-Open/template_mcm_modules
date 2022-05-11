@@ -72,8 +72,12 @@ function installKubectlLocally() {
 
     ## Install kubectl, if necessary
     if [ ! -x ${WORK_DIR}/bin/kubectl ]; then
-        kversion=$(wget -qO- https://storage.googleapis.com/kubernetes-release/release/stable.txt)
-
+        if [ "${KUBE_CTL_VERSION}" == "latest" ]
+        then
+            kversion=$(wget -qO- https://storage.googleapis.com/kubernetes-release/release/stable.txt)
+        else
+            kversion=${KUBE_CTL_VERSION}
+        fi
         echo "Installing kubectl (version ${kversion}) into ${WORK_DIR}..."
         wget --quiet https://storage.googleapis.com/kubernetes-release/release/${kversion}/bin/linux/${ARCH}/kubectl -P ${WORK_DIR}/bin
         chmod +x ${WORK_DIR}/bin/kubectl
